@@ -1,6 +1,8 @@
 package pt.zerodseis.services.webscraper.templates;
 
-public interface WebScraperTemplate {
+import java.io.Serializable;
+
+public interface WebScraperTemplate extends Serializable {
 
     String getWebSite();
 

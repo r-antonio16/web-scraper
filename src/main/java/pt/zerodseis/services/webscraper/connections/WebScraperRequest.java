@@ -5,7 +5,7 @@ import java.net.URI;
 
 public interface WebScraperRequest {
 
-    URI getURL();
+    URI getUrl();
     Cookie[] getCookies();
 
     String getUserAgent();
