@@ -14,9 +14,12 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>web-scraper</name>
   <description>web-scraper</description>
+
   <properties>
     <java.version>20</java.version>
+    <company.name>zerodseis</company.name>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -49,6 +52,38 @@
           </excludes>
         </configuration>
       </plugin>
+
+      <plugin>
+      <groupId>io.fabric8</groupId>
+      <artifactId>docker-maven-plugin</artifactId>
+      <version>0.43.0</version>
+      <configuration>
+        <verbose>true</verbose>
+        <images>
+          <image>
+            <name>${company.name}/${project.artifactId}:${project.version}</name>
+            <build>
+              <dockerFileDir>${project.basedir}</dockerFileDir>
+              <assembly>
+                <descriptorRef>artifact</descriptorRef>
+              </assembly>
+            </build>
+          </image>
+        </images>
+        <buildArgs>
+          <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+        </buildArgs>
+      </configuration>
+      <executions>
+        <execution>
+          <id>default</id>
+          <phase>install</phase>
+          <goals>
+            <goal>build</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
     </plugins>
   </build>
 
