@@ -64,9 +64,6 @@
             <name>${company.name}/${project.artifactId}:${project.version}</name>
             <build>
               <dockerFileDir>${project.basedir}</dockerFileDir>
-              <assembly>
-                <descriptorRef>artifact</descriptorRef>
-              </assembly>
             </build>
           </image>
         </images>

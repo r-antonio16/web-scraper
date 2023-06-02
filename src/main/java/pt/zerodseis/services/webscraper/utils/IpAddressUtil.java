@@ -12,7 +12,7 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import pt.zerodseis.services.webscraper.connections.HTTPConnection;
-import pt.zerodseis.services.webscraper.connections.WebScraperProxy;
+import pt.zerodseis.services.webscraper.connections.WebScraperConnectionProvider;
 import pt.zerodseis.services.webscraper.exceptions.GetExternalIpAddressException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -20,13 +20,13 @@ public class IpAddressUtil {
 
     private final static String WEBSITE_TO_GET_EXTERNAL_IP = getWebsiteToGetExternalIp();
 
-    public static InetAddress getExternalIpAddress(WebScraperProxy proxy) {
+    public static InetAddress getExternalIpAddress(WebScraperConnectionProvider provider) {
         Optional<HTTPConnection> connectionOpt = Optional.empty();
 
         try {
             URL url = URI.create(WEBSITE_TO_GET_EXTERNAL_IP).toURL();
 
-            connectionOpt = proxy.openConnection(url);
+            connectionOpt = provider.openConnection(url);
 
             if (connectionOpt.isPresent()) {
                 int responseCode = connectionOpt.get().getResponseCode();
@@ -35,7 +35,7 @@ public class IpAddressUtil {
                     throw new GetExternalIpAddressException(
                             "Could not get a success response from " + url
                                     + " while consulting the external IP address of "
-                                    + proxy.getClass());
+                                    + provider.getClass());
                 }
 
                 try (BufferedReader reader = new BufferedReader(
@@ -50,10 +50,10 @@ public class IpAddressUtil {
         } catch (IOException e) {
             throw new GetExternalIpAddressException(
                     "Could not get the external IP address of "
-                            + proxy.getClass(), e);
+                            + provider.getClass(), e);
         } finally {
-            if (proxy != null && connectionOpt.isPresent()) {
-                proxy.closeConnection(connectionOpt.get());
+            if (provider != null && connectionOpt.isPresent()) {
+                provider.closeConnection(connectionOpt.get());
             }
         }
     }

@@ -5,12 +5,12 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.Optional;
 
-public interface WebScraperProxy {
+public interface WebScraperConnectionProvider {
 
     InetAddress getIp();
     int getActiveConnections();
     Optional<HTTPConnection> openConnection(URL url) throws IOException;
     void closeConnection(HTTPConnection connection);
     void renewIp();
-    WebScraperProxyStatus getStatus();
+    WebScraperConnectionProviderStatus getStatus();
 }
