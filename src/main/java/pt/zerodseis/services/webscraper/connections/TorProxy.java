@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,8 +28,8 @@ import pt.zerodseis.services.webscraper.utils.IpAddressUtil;
 public class TorProxy implements WebScraperProxy {
 
     private final Map<UUID, HttpURLConnection> activeConnections;
-    private final AtomicBoolean isRestartingService;
     private final String restartScripPath;
+    private final AtomicReference<WebScraperProxyStatus> status;
     private final Proxy proxy;
     private final AtomicReference<InetAddress> ipAddr;
 
@@ -40,8 +39,8 @@ public class TorProxy implements WebScraperProxy {
             @Value("${proxy.tor.port}") int port,
             @Value("${proxy.tor.restart.script.path}") String restartScripPath) {
         this.activeConnections = new ConcurrentHashMap<>();
-        this.isRestartingService = new AtomicBoolean(false);
         this.restartScripPath = restartScripPath;
+        this.status = new AtomicReference<>(WebScraperProxyStatus.UP);
         this.proxy = new Proxy(Type.SOCKS, new InetSocketAddress(hostname, port));
         this.ipAddr = new AtomicReference<>(IpAddressUtil.getExternalIpAddress(this));
         log.info("External IP: " + getIp().getHostAddress());
@@ -59,7 +58,7 @@ public class TorProxy implements WebScraperProxy {
 
     @Override
     public Optional<HTTPConnection> openConnection(URL url) throws IOException {
-        if (isRestartingService.get()) {
+        if (!WebScraperProxyStatus.UP.equals(status.get())) {
             return Optional.empty();
         }
 
@@ -81,18 +80,25 @@ public class TorProxy implements WebScraperProxy {
     @Override
     public void renewIp() {
         if (activeConnections.isEmpty()) {
-            if (isRestartingService.compareAndSet(false, true)) {
+            if (!WebScraperProxyStatus.RESTARTING.equals(status.get())) {
+                status.set(WebScraperProxyStatus.RESTARTING);
                 try {
                     Process process = new ProcessBuilder("/bin/sh", restartScripPath).start();
                     process.waitFor();
-                    isRestartingService.set(false);
+                    status.set(WebScraperProxyStatus.UP);
                     ipAddr.set(IpAddressUtil.getExternalIpAddress(this));
-                    log.info("External IP was updated to: " + getIp().getHostAddress());
+                    log.info("External IP updated to: " + getIp().getHostAddress());
                 } catch (InterruptedException | IOException e) {
+                    status.set(WebScraperProxyStatus.DOWN);
                     throw new RenewExternalIpAddressException(
                             "Could not renew TorProxy IP", e);
                 }
             }
         }
+    }
+
+    @Override
+    public WebScraperProxyStatus getStatus() {
+        return status.get();
     }
 }

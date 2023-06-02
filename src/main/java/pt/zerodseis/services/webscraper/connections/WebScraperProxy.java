@@ -9,10 +9,8 @@ public interface WebScraperProxy {
 
     InetAddress getIp();
     int getActiveConnections();
-
     Optional<HTTPConnection> openConnection(URL url) throws IOException;
-
     void closeConnection(HTTPConnection connection);
-
     void renewIp();
+    WebScraperProxyStatus getStatus();
 }
