@@ -80,18 +80,18 @@ public class TorProxy implements WebScraperProxy {
 
     @Override
     public void renewIp() {
-        isRestartingService.set(true);
         if (activeConnections.isEmpty()) {
-
-            try {
-                Process process = new ProcessBuilder("/bin/sh", restartScripPath).start();
-                process.waitFor();
-                isRestartingService.set(false);
-                ipAddr.set(IpAddressUtil.getExternalIpAddress(this));
-                log.info("External IP was updated to: " + getIp().getHostAddress());
-            } catch (InterruptedException | IOException e) {
-                throw new RenewExternalIpAddressException(
-                        "Could not renew TorProxy IP", e);
+            if (isRestartingService.compareAndSet(false, true)) {
+                try {
+                    Process process = new ProcessBuilder("/bin/sh", restartScripPath).start();
+                    process.waitFor();
+                    isRestartingService.set(false);
+                    ipAddr.set(IpAddressUtil.getExternalIpAddress(this));
+                    log.info("External IP was updated to: " + getIp().getHostAddress());
+                } catch (InterruptedException | IOException e) {
+                    throw new RenewExternalIpAddressException(
+                            "Could not renew TorProxy IP", e);
+                }
             }
         }
     }
