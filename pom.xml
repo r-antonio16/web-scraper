@@ -18,7 +18,7 @@
   <properties>
     <java.version>20</java.version>
     <company.name>zerodseis</company.name>
-    <maven.test.skip>false</maven.test.skip>
+<!--    <maven.test.skip>false</maven.test.skip>-->
   </properties>
 
   <dependencies>
@@ -55,34 +55,54 @@
       </plugin>
 
       <plugin>
-      <groupId>io.fabric8</groupId>
-      <artifactId>docker-maven-plugin</artifactId>
-      <version>0.43.0</version>
-      <configuration>
-        <verbose>true</verbose>
-        <images>
-          <image>
-            <name>${company.name}/${project.artifactId}:${project.version}</name>
-            <build>
-              <dockerFileDir>${project.basedir}</dockerFileDir>
-            </build>
-          </image>
-        </images>
-        <buildArgs>
-          <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-        </buildArgs>
-      </configuration>
-      <executions>
-        <execution>
-          <id>default</id>
-          <phase>install</phase>
-          <goals>
-            <goal>build</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.43.0</version>
+        <configuration>
+          <verbose>true</verbose>
+          <images>
+            <image>
+              <name>${company.name}/${project.artifactId}:${project.version}</name>
+              <build>
+                <dockerFileDir>${project.basedir}</dockerFileDir>
+              </build>
+            </image>
+          </images>
+          <buildArgs>
+            <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+          </buildArgs>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default</id>
+            <phase>install</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>skip-tests</id>
+      <activation>
+        <!-- Define the conditions to activate the profile -->
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <skipTests>true</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
