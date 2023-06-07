@@ -347,9 +347,10 @@ public class TorConnectionProviderTest {
 
             try (ExecutorService es = Executors.newCachedThreadPool()) {
                 for (int i = 0; i < requestedSites; i++) {
-                    es.execute(getOpenConnectionRunnable(provider, sites.get(i), connections));
+                    es.execute(ProviderTestHelper.getOpenConnectionRunnable(provider, sites.get(i),
+                            connections));
                 }
-                awaitTerminationAfterShutdown(es);
+                ProviderTestHelper.awaitTerminationAfterShutdown(es);
             }
 
             assertEquals(maxConnections, provider.getActiveConnections());
@@ -358,30 +359,16 @@ public class TorConnectionProviderTest {
                 for (int i = 0; i < requestedSites; i++) {
                     Objects.requireNonNull(connections.poll())
                             .ifPresent(c ->
-                                    es.execute(getCloseConnectionRunnable(provider, c))
+                                    es.execute(
+                                            ProviderTestHelper.getCloseConnectionRunnable(provider,
+                                                    c))
                             );
                 }
-                awaitTerminationAfterShutdown(es);
+                ProviderTestHelper.awaitTerminationAfterShutdown(es);
             }
 
             assertEquals(0, provider.getActiveConnections());
         }
-    }
-
-    private Runnable getOpenConnectionRunnable(WebScraperConnectionProvider provider, URL url,
-            LinkedBlockingQueue<Optional<HTTPConnection>> connections) {
-        return () -> {
-            try {
-                connections.add(provider.openConnection(url));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        };
-    }
-
-    private Runnable getCloseConnectionRunnable(WebScraperConnectionProvider provider,
-            HTTPConnection connection) {
-        return () -> provider.closeConnection(connection);
     }
 
     private String getRestartPathScriptMockByOS() {
@@ -392,17 +379,5 @@ public class TorConnectionProviderTest {
     private String getRestartPathScriptSleepMockByOS() {
         String os = System.getProperty("os.name").toLowerCase();
         return os.contains("win") ? "/c timeout /t 5" : "-c sleep 5";
-    }
-
-    private void awaitTerminationAfterShutdown(ExecutorService threadPool) {
-        threadPool.shutdown();
-        try {
-            if (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
-                threadPool.shutdownNow();
-            }
-        } catch (InterruptedException ex) {
-            threadPool.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
     }
 }

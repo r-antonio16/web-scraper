@@ -18,7 +18,7 @@
   <properties>
     <java.version>20</java.version>
     <company.name>zerodseis</company.name>
-    <maven.test.skip>true</maven.test.skip>
+    <maven.test.skip>false</maven.test.skip>
   </properties>
 
   <dependencies>
