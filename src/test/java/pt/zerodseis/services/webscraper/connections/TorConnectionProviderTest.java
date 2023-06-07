@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.MockedStatic;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pt.zerodseis.services.webscraper.exceptions.RenewExternalIpAddressException;
@@ -50,6 +50,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     "",
                     1,
                     TimeUnit.SECONDS
@@ -71,6 +72,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     "",
                     1,
                     TimeUnit.SECONDS
@@ -96,6 +98,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     "",
                     1,
                     TimeUnit.SECONDS
@@ -124,6 +127,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     "",
                     1,
                     TimeUnit.SECONDS
@@ -155,6 +159,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     "",
                     1,
                     TimeUnit.SECONDS
@@ -191,6 +196,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     "",
                     1,
                     TimeUnit.SECONDS
@@ -223,6 +229,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     getRestartPathScriptMockByOS(),
                     5,
                     TimeUnit.SECONDS
@@ -251,6 +258,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     getRestartPathScriptSleepMockByOS(),
                     1,
                     TimeUnit.SECONDS
@@ -281,6 +289,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    10,
                     getRestartPathScriptMockByOS(),
                     5,
                     TimeUnit.SECONDS
@@ -302,9 +311,9 @@ public class TorConnectionProviderTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {100, 200, 500})
-    public void Should_OpenAndCloseMultipleConnections_When_Concurrent_Threads_Run_It(
-            int requestedSites)
+    @CsvSource({"100,100", "200,200", "500,500", "10,100", "20, 200", "50, 500"})
+    public void Should_NotExceedMaxConnections_When_Concurrent_Threads_Opens_Connections(
+            int maxConnections, int requestedSites)
             throws IOException {
         InetAddress ip = InetAddress.getByName("100.0.0.1");
         List<URL> sites = new ArrayList<>();
@@ -325,6 +334,7 @@ public class TorConnectionProviderTest {
             WebScraperConnectionProvider provider = new TorConnectionProvider(
                     "127.0.0.1",
                     5000,
+                    maxConnections,
                     "",
                     1,
                     TimeUnit.SECONDS
@@ -342,7 +352,7 @@ public class TorConnectionProviderTest {
                 awaitTerminationAfterShutdown(es);
             }
 
-            assertEquals(requestedSites, provider.getActiveConnections());
+            assertEquals(maxConnections, provider.getActiveConnections());
 
             try (ExecutorService es = Executors.newCachedThreadPool()) {
                 for (int i = 0; i < requestedSites; i++) {

@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,8 @@ import pt.zerodseis.services.webscraper.utils.IpAddressUtil;
 public class TorConnectionProvider implements WebScraperConnectionProvider {
 
     private final Map<UUID, HttpURLConnection> activeConnections;
+    private final AtomicInteger activeConnectionsCounter;
+    private final int maxActiveConnections;
     private final String restartScriptPath;
     private final long waitForRestartScriptTimeout;
     private final TimeUnit waitForRestartScriptUnit;
@@ -40,10 +43,13 @@ public class TorConnectionProvider implements WebScraperConnectionProvider {
     public TorConnectionProvider(
             @Value("${connection.provider.tor.hostname}") String hostname,
             @Value("${connection.provider.tor.port}") int port,
+            @Value("${connection.provider.tor.max.active.connections}") int maxActiveConnections,
             @Value("${connection.provider.tor.restart.script.path}") String restartScriptPath,
             @Value("${connection.provider.tor.wait.for.restart.script.timeout}") long waitForRestartScriptTimeout,
             @Value("${connection.provider.tor.wait.for.restart.script.unit}") TimeUnit waitForRestartScriptUnit) {
         this.activeConnections = new ConcurrentHashMap<>();
+        this.activeConnectionsCounter = new AtomicInteger();
+        this.maxActiveConnections = maxActiveConnections;
         this.restartScriptPath = restartScriptPath;
         this.waitForRestartScriptTimeout = waitForRestartScriptTimeout;
         this.waitForRestartScriptUnit = waitForRestartScriptUnit;
@@ -66,15 +72,22 @@ public class TorConnectionProvider implements WebScraperConnectionProvider {
 
     @Override
     public int getActiveConnections() {
-        return activeConnections.size();
+        return activeConnectionsCounter.get();
+    }
+
+    @Override
+    public boolean isActiveConnectionsLimitReached() {
+        return activeConnectionsCounter.get() >= maxActiveConnections;
     }
 
     @Override
     public Optional<HTTPConnection> openConnection(URL url) throws IOException {
-        if (!WebScraperConnectionProviderStatus.UP.equals(status.get())) {
+        if (!WebScraperConnectionProviderStatus.UP.equals(status.get())
+                || isActiveConnectionsLimitReached()) {
             return Optional.empty();
         }
 
+        activeConnectionsCounter.incrementAndGet();
         UUID uuid = UUID.randomUUID();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
         activeConnections.put(uuid, connection);
@@ -87,14 +100,17 @@ public class TorConnectionProvider implements WebScraperConnectionProvider {
             HttpURLConnection httpURLConnection = activeConnections.get(connection.uuid());
             httpURLConnection.disconnect();
             activeConnections.remove(connection.uuid());
+            activeConnectionsCounter.decrementAndGet();
         }
     }
 
     @Override
     public void renewIp() {
-        if (activeConnections.isEmpty()) {
-            if (status.compareAndSet(WebScraperConnectionProviderStatus.UP, WebScraperConnectionProviderStatus.RESTARTING)
-            || status.compareAndSet(WebScraperConnectionProviderStatus.DOWN, WebScraperConnectionProviderStatus.RESTARTING)) {
+        if (activeConnectionsCounter.get() == 0) {
+            if (status.compareAndSet(WebScraperConnectionProviderStatus.UP,
+                    WebScraperConnectionProviderStatus.RESTARTING)
+                    || status.compareAndSet(WebScraperConnectionProviderStatus.DOWN,
+                    WebScraperConnectionProviderStatus.RESTARTING)) {
                 try {
                     Process process = new ProcessBuilder(commandShell, restartScriptPath).start();
                     process.waitFor(waitForRestartScriptTimeout, waitForRestartScriptUnit);
