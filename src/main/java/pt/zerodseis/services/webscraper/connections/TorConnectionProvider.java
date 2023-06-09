@@ -36,10 +36,6 @@ public class TorConnectionProvider extends AbstractConnectionProvider {
         this.waitForRestartScriptTimeout = waitForRestartScriptTimeout;
         this.waitForRestartScriptUnit = waitForRestartScriptUnit;
         this.commandShell = getCommandShellByOS();
-
-        if (getIp() != null) {
-            log.info("External IP: " + getIp().getHostAddress());
-        }
     }
 
     @Override
@@ -55,7 +51,8 @@ public class TorConnectionProvider extends AbstractConnectionProvider {
                     if (0 == process.exitValue()) {
                         status.set(WebScraperConnectionProviderStatus.UP);
                         ipAddr.set(IpAddressUtil.getExternalIpAddress(this));
-                        log.info("External IP updated to: " + getIp().getHostAddress());
+                        log.info("{} external IP updated to {}", this.getClass().getName(),
+                                getIp().getHostAddress());
                     } else {
                         status.set(WebScraperConnectionProviderStatus.DOWN);
                     }

@@ -11,8 +11,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import lombok.extern.log4j.Log4j2;
 import pt.zerodseis.services.webscraper.utils.IpAddressUtil;
 
+@Log4j2
 abstract class AbstractConnectionProvider implements WebScraperConnectionProvider {
 
     protected final Map<UUID, HttpURLConnection> activeConnections;
@@ -32,6 +34,8 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
 
         if (getIp() == null) {
             this.status.set(WebScraperConnectionProviderStatus.DOWN);
+        } else {
+            log.info(this.getClass().getSimpleName() + " external IP is " + getIp().getHostAddress());
         }
     }
 
