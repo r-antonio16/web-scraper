@@ -64,6 +64,7 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
         activeConnectionsCounter.incrementAndGet();
         UUID uuid = UUID.randomUUID();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
+        connection.connect();
         activeConnections.put(uuid, connection);
         return Optional.of(new HTTPConnection(uuid, connection));
     }
