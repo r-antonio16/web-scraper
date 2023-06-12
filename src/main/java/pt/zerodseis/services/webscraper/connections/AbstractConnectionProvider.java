@@ -1,5 +1,6 @@
 package pt.zerodseis.services.webscraper.connections;
 
+import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -86,5 +87,17 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
     @Override
     public WebScraperConnectionProviderStatus getStatus() {
         return status.get();
+    }
+
+    @PreDestroy
+    protected void destroy() {
+        if (getActiveConnections() > 0) {
+            activeConnections.forEach((uuid, conn) -> {
+                conn.disconnect();
+            });
+            
+            activeConnections.clear();
+            activeConnectionsCounter.set(0);
+        }
     }
 }

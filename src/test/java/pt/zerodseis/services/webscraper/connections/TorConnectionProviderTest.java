@@ -371,6 +371,49 @@ public class TorConnectionProviderTest {
         }
     }
 
+    @ParameterizedTest
+    @CsvSource({"100", "200", "500"})
+    public void Should_closeAllConnections_When_isDestroyed(int activeConnections)
+            throws IOException {
+        InetAddress ip = InetAddress.getByName("100.0.0.1");
+        List<URL> sites = new ArrayList<>();
+        LinkedBlockingQueue<Optional<HTTPConnection>> connections = new LinkedBlockingQueue<>();
+
+        for (int i = 0; i < activeConnections; i++) {
+            URL site = mock(URL.class);
+            sites.add(site);
+            when(site.openConnection(any(Proxy.class))).thenReturn(
+                    mock(HttpURLConnection.class));
+        }
+
+        try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
+            util.when(
+                            () -> IpAddressUtil.getExternalIpAddress(any(DefaultConnectionProvider.class)))
+                    .thenReturn(ip);
+
+            DefaultConnectionProvider provider = new DefaultConnectionProvider(Integer.MAX_VALUE);
+
+            assertNotNull(provider);
+            assertEquals(ip, provider.getIp());
+            assertEquals(0, provider.getActiveConnections());
+            assertEquals(WebScraperConnectionProviderStatus.UP, provider.getStatus());
+
+            try (ExecutorService es = Executors.newCachedThreadPool()) {
+                for (int i = 0; i < activeConnections; i++) {
+                    es.execute(ProviderTestHelper.getOpenConnectionRunnable(provider, sites.get(i),
+                            connections));
+                }
+                ProviderTestHelper.awaitTerminationAfterShutdown(es);
+            }
+
+            assertEquals(activeConnections, provider.getActiveConnections());
+
+            provider.destroy();
+
+            assertEquals(0, provider.getActiveConnections());
+        }
+    }
+
     private String getRestartPathScriptMockByOS() {
         String os = System.getProperty("os.name").toLowerCase();
         return os.contains("win") ? "/c exit(0)" : "-c exit(0)";
