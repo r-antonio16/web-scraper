@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.Callable;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.util.StringUtils;
 import pt.zerodseis.services.webscraper.connections.HTTPConnection;
@@ -31,7 +30,8 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
         Optional<WebScraperConnectionProvider> providerOpt = providerManager.electProvider();
 
         if (providerOpt.isEmpty()) {
-            return new WebScraperResponse(request, null, HttpStatus.SERVICE_UNAVAILABLE);
+            return new WebScraperResponse(request, null, null,
+                    ScrapTaskStatus.PROVIDER_UNAVAILABLE);
         }
 
         WebScraperConnectionProvider provider = providerOpt.get();
@@ -47,7 +47,7 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
 
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     return new WebScraperResponse(request, null,
-                            HttpStatusCode.valueOf(responseCode));
+                            HttpStatusCode.valueOf(responseCode), ScrapTaskStatus.REQUEST_SUCCESS);
                 }
 
                 try (BufferedReader reader = new BufferedReader(
@@ -60,11 +60,12 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
                     }
 
                     return new WebScraperResponse(request, sj.toString(),
-                            HttpStatusCode.valueOf(responseCode));
+                            HttpStatusCode.valueOf(responseCode), ScrapTaskStatus.REQUEST_SUCCESS);
                 }
             }
 
-            return new WebScraperResponse(request, null, null);
+            return new WebScraperResponse(request, null, null,
+                    ScrapTaskStatus.CONNECTION_UNAVAILABLE);
         } catch (IOException e) {
             throw new SiteConnectionException(
                     String.format("Provider %s could not build the response for request %s",

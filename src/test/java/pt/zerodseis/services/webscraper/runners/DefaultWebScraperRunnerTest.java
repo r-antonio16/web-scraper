@@ -83,7 +83,8 @@ public class DefaultWebScraperRunnerTest {
         assertNotNull(response);
         assertNull(response.content());
         assertEquals(request, response.request());
-        assertEquals(HttpStatus.REQUEST_TIMEOUT, response.statusCode());
+        assertNull(response.statusCode());
+        assertEquals(ScrapTaskStatus.REQUEST_TIMEOUT, response.scrapTaskStatus());
     }
 
     @Test
@@ -103,7 +104,8 @@ public class DefaultWebScraperRunnerTest {
         assertNotNull(response);
         assertNull(response.content());
         assertEquals(request, response.request());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.statusCode());
+        assertNull(response.statusCode());
+        assertEquals(ScrapTaskStatus.REQUEST_ERROR, response.scrapTaskStatus());
     }
 
     @Test
@@ -179,8 +181,9 @@ public class DefaultWebScraperRunnerTest {
         for (WebScraperResponse response : responses) {
             assertNull(response.content());
             assertNotNull(response.request());
+            assertNull(response.statusCode());
             assertTrue(requests.contains(response.request()));
-            assertEquals(HttpStatus.REQUEST_TIMEOUT, response.statusCode());
+            assertEquals(ScrapTaskStatus.REQUEST_TIMEOUT, response.scrapTaskStatus());
         }
     }
 
@@ -213,8 +216,8 @@ public class DefaultWebScraperRunnerTest {
         for (WebScraperResponse response : responses) {
             assertNotNull(response.request());
             assertTrue(requests.contains(response.request()));
-            assertTrue(HttpStatus.INTERNAL_SERVER_ERROR.equals(response.statusCode())
-                    || HttpStatus.OK.equals(response.statusCode()));
+            assertTrue(ScrapTaskStatus.REQUEST_ERROR.equals(response.scrapTaskStatus())
+                    || ScrapTaskStatus.REQUEST_SUCCESS.equals(response.scrapTaskStatus()));
         }
     }
 

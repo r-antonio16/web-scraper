@@ -43,7 +43,8 @@ public class ScrapSiteCallableTest {
         assertNotNull(response);
         assertNull(response.content());
         assertEquals(request, response.request());
-        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.statusCode());
+        assertNull(response.statusCode());
+        assertEquals(ScrapTaskStatus.PROVIDER_UNAVAILABLE, response.scrapTaskStatus());
         verify(url, times(0)).openConnection(any());
     }
 
@@ -66,6 +67,7 @@ public class ScrapSiteCallableTest {
         assertNull(response.content());
         assertEquals(request, response.request());
         assertNull(response.statusCode());
+        assertEquals(ScrapTaskStatus.CONNECTION_UNAVAILABLE, response.scrapTaskStatus());
         verify(url, times(0)).openConnection(any());
     }
 
@@ -111,6 +113,7 @@ public class ScrapSiteCallableTest {
         assertNull(response.content());
         assertEquals(request, response.request());
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode());
+        assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
         verify(defaultConnectionProvider, times(1)).closeConnection(any());
     }
 
@@ -135,6 +138,7 @@ public class ScrapSiteCallableTest {
         assertEquals("html content", response.content());
         assertEquals(request, response.request());
         assertEquals(HttpStatus.OK, response.statusCode());
+        assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
         verify(defaultConnectionProvider, times(1)).closeConnection(any());
     }
 

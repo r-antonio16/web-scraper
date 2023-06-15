@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import pt.zerodseis.services.webscraper.connections.manager.WebScraperConnectionProviderManager;
@@ -78,16 +77,16 @@ public class DefaultWebScraperRunner implements WebScraperRunner {
             responseFuture.cancel(true);
             log.error("The task to get response for request {} took more time than expected",
                     request);
-            return new WebScraperResponse(request, null, HttpStatus.REQUEST_TIMEOUT);
+            return new WebScraperResponse(request, null, null, ScrapTaskStatus.REQUEST_TIMEOUT);
         } catch (InterruptedException e) {
             log.error("The task to get response for request {} was interrupted", request);
-            return new WebScraperResponse(request, null, HttpStatus.REQUEST_TIMEOUT);
+            return new WebScraperResponse(request, null, null, ScrapTaskStatus.REQUEST_INTERRUPTED);
         } catch (ExecutionException e) {
             log.error("The task to get response for request {} could not complete with success",
                     request);
         }
 
-        return new WebScraperResponse(request, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new WebScraperResponse(request, null, null, ScrapTaskStatus.REQUEST_ERROR);
     }
 
     @PreDestroy
