@@ -235,12 +235,15 @@ public class DefaultWebScraperRunnerTest {
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
                 List.of(torProvider1, torProvider2), defaultProvider);
 
-        List<WebScraperRequest> requests1 = RunnersTestsHelper.generateWebScraperRequests(requestsToGen,
-                connectionWaitMillis, () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
-        List<WebScraperRequest> requests2 = RunnersTestsHelper.generateWebScraperRequests(requestsToGen,
-                connectionWaitMillis, () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
-        List<WebScraperRequest> requests3 = RunnersTestsHelper.generateWebScraperRequests(requestsToGen,
-                connectionWaitMillis, () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
+        List<WebScraperRequest> requests1 = RunnersTestsHelper.generateWebScraperRequests(
+                requestsToGen, connectionWaitMillis,
+                () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
+        List<WebScraperRequest> requests2 = RunnersTestsHelper.generateWebScraperRequests(
+                requestsToGen, connectionWaitMillis,
+                () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
+        List<WebScraperRequest> requests3 = RunnersTestsHelper.generateWebScraperRequests(
+                requestsToGen, connectionWaitMillis,
+                () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
 
         DefaultWebScraperRunner runner = new DefaultWebScraperRunner(providerManager, 1,
                 TimeUnit.SECONDS);
@@ -252,11 +255,22 @@ public class DefaultWebScraperRunnerTest {
         assertNotNull(responses1);
         assertEquals(requests1.size(), responses1.size());
 
+        int failedRequests = 0;
+
         for (WebScraperResponse response : responses1) {
             assertNotNull(response.request());
-            assertEquals("html content", response.content());
-            assertTrue(requests1.contains(response.request()));
-            assertEquals(HttpStatus.OK, response.statusCode());
+
+            if (response.content() == null) {
+                failedRequests++;
+                assertTrue(requests1.contains(response.request()));
+                assertNull(response.statusCode());
+                assertEquals(ScrapTaskStatus.CONNECTION_UNAVAILABLE, response.scrapTaskStatus());
+            } else {
+                assertEquals("html content", response.content());
+                assertTrue(requests1.contains(response.request()));
+                assertEquals(HttpStatus.OK, response.statusCode());
+                assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
+            }
         }
 
         assertNotNull(responses2);
@@ -264,9 +278,18 @@ public class DefaultWebScraperRunnerTest {
 
         for (WebScraperResponse response : responses2) {
             assertNotNull(response.request());
-            assertEquals("html content", response.content());
-            assertTrue(requests2.contains(response.request()));
-            assertEquals(HttpStatus.OK, response.statusCode());
+
+            if (response.content() == null) {
+                failedRequests++;
+                assertTrue(requests2.contains(response.request()));
+                assertNull(response.statusCode());
+                assertEquals(ScrapTaskStatus.CONNECTION_UNAVAILABLE, response.scrapTaskStatus());
+            } else {
+                assertEquals("html content", response.content());
+                assertTrue(requests2.contains(response.request()));
+                assertEquals(HttpStatus.OK, response.statusCode());
+                assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
+            }
         }
 
         assertNotNull(responses3);
@@ -274,9 +297,27 @@ public class DefaultWebScraperRunnerTest {
 
         for (WebScraperResponse response : responses3) {
             assertNotNull(response.request());
-            assertEquals("html content", response.content());
-            assertTrue(requests3.contains(response.request()));
-            assertEquals(HttpStatus.OK, response.statusCode());
+
+            if (response.content() == null) {
+                failedRequests++;
+                assertTrue(requests3.contains(response.request()));
+                assertNull(response.statusCode());
+                assertEquals(ScrapTaskStatus.CONNECTION_UNAVAILABLE, response.scrapTaskStatus());
+            } else {
+                assertEquals("html content", response.content());
+                assertTrue(requests3.contains(response.request()));
+                assertEquals(HttpStatus.OK, response.statusCode());
+                assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
+            }
         }
+
+        if (failedRequests > 0) {
+            System.out.printf(
+                    "Should_dispatchAllRequestsWithSuccess_When_MultipleSitesRequests [%d,%d,%d] Failed requests %d%n",
+                    maxActiveConnections, requestsToGen, connectionWaitMillis, failedRequests);
+        }
+
+        // Accept only 5% of request failures
+        assertTrue(failedRequests <= 3 * requestsToGen * 0.00);
     }
 }
