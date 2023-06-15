@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pt.zerodseis.services.webscraper.connections.HTTPConnection;
 import pt.zerodseis.services.webscraper.connections.WebScraperConnectionProvider;
-import pt.zerodseis.services.webscraper.exceptions.GetExternalIpAddressException;
+import pt.zerodseis.services.webscraper.exceptions.SiteConnectionException;
 
 @ExtendWith(SpringExtension.class)
 public class IpAddressUtilTest {
@@ -91,7 +91,8 @@ public class IpAddressUtilTest {
         when(httpConnection.getInputStream()).thenThrow(IOException.class);
         when(provider.openConnection(any(URL.class))).thenReturn(Optional.of(httpConnection));
 
-        assertThrows(GetExternalIpAddressException.class, () -> IpAddressUtil.getExternalIpAddress(provider));
+        assertThrows(SiteConnectionException.class,
+                () -> IpAddressUtil.getExternalIpAddress(provider));
 
         verify(httpConnection, times(1)).getInputStream();
         verify(provider, times(1)).closeConnection(any(HTTPConnection.class));

@@ -40,7 +40,7 @@ public class TorConnectionProvider extends AbstractConnectionProvider {
 
     @Override
     public void renewIp() {
-        if (activeConnectionsCounter.get() == 0) {
+        if (freeConnectionsCounter.get() == maxActiveConnections) {
             if (status.compareAndSet(WebScraperConnectionProviderStatus.UP,
                     WebScraperConnectionProviderStatus.RESTARTING)
                     || status.compareAndSet(WebScraperConnectionProviderStatus.DOWN,

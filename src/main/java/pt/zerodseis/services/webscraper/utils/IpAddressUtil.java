@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import pt.zerodseis.services.webscraper.connections.HTTPConnection;
 import pt.zerodseis.services.webscraper.connections.WebScraperConnectionProvider;
-import pt.zerodseis.services.webscraper.exceptions.GetExternalIpAddressException;
+import pt.zerodseis.services.webscraper.exceptions.SiteConnectionException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IpAddressUtil {
@@ -32,7 +32,7 @@ public class IpAddressUtil {
                 int responseCode = connectionOpt.get().getResponseCode();
 
                 if (responseCode != HttpURLConnection.HTTP_OK) {
-                    throw new GetExternalIpAddressException(
+                    throw new SiteConnectionException(
                             "Could not get a success response from " + url
                                     + " while consulting the external IP address of "
                                     + provider.getClass());
@@ -48,7 +48,7 @@ public class IpAddressUtil {
 
             return null;
         } catch (IOException e) {
-            throw new GetExternalIpAddressException(
+            throw new SiteConnectionException(
                     "Could not get the external IP address of "
                             + provider.getClass(), e);
         } finally {
@@ -62,7 +62,7 @@ public class IpAddressUtil {
         try {
             return InetAddress.getByName(host);
         } catch (UnknownHostException e) {
-            throw new GetExternalIpAddressException(
+            throw new SiteConnectionException(
                     "Could not get InetAddress from host: %s" + host, e);
         }
     }
@@ -71,7 +71,7 @@ public class IpAddressUtil {
         String envValue = System.getenv("WEBSITE_TO_GET_EXTERNAL_IP");
 
         if (envValue == null) {
-            return "https://api.ipify.org";
+            return "https://api4.my-ip.io/ip";
         }
 
         return envValue;

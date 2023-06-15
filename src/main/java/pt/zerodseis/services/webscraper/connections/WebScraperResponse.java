@@ -2,11 +2,7 @@ package pt.zerodseis.services.webscraper.connections;
 
 import org.springframework.http.HttpStatusCode;
 
-public interface WebScraperResponse {
+public record WebScraperResponse(WebScraperRequest request, String content,
+                                 HttpStatusCode statusCode) {
 
-    WebScraperRequest getRequest();
-
-    String getContent();
-
-    HttpStatusCode getStatusCode();
 }

@@ -1,13 +1,9 @@
 package pt.zerodseis.services.webscraper.connections;
 
-import jakarta.servlet.http.Cookie;
-import java.net.URI;
+import java.net.HttpCookie;
+import java.net.URL;
 
-public interface WebScraperRequest {
 
-    URI getUrl();
-    Cookie[] getCookies();
-
-    String getUserAgent();
+public record WebScraperRequest(URL url, HttpCookie[] cookies, String userAgent) {
 
 }
