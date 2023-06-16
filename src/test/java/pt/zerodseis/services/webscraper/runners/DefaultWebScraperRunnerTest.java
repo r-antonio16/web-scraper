@@ -59,9 +59,9 @@ public class DefaultWebScraperRunnerTest {
         runner.destroy();
         assertNotNull(runner);
         assertThrows(RejectedExecutionException.class,
-                () -> runner.scrapSite(new WebScraperRequest(null, null, null)));
+                () -> runner.scrapSite(new WebScraperRequest(null,null, null, null)));
         assertThrows(RejectedExecutionException.class,
-                () -> runner.scrapSites(List.of(new WebScraperRequest(null, null, null))));
+                () -> runner.scrapSites(List.of(new WebScraperRequest(null,null, null, null))));
     }
 
     @Test

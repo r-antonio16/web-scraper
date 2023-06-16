@@ -54,7 +54,7 @@ public class RunnersTestsHelper {
                     throw new RuntimeException(e);
                 }
             }
-            requests.add(new WebScraperRequest(siteMock, new HttpCookie[]{sessionId},
+            requests.add(new WebScraperRequest(i, siteMock, new HttpCookie[]{sessionId},
                     UserAgentUtil.getRandomUserAgent()));
         }
 

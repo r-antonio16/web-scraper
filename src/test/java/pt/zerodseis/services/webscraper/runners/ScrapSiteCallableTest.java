@@ -33,7 +33,7 @@ public class ScrapSiteCallableTest {
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
         URL url = mock(URL.class);
-        WebScraperRequest request = new WebScraperRequest(url, null, null);
+        WebScraperRequest request = new WebScraperRequest(1, url, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         when(manager.electProvider()).thenReturn(Optional.empty());
@@ -54,7 +54,7 @@ public class ScrapSiteCallableTest {
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
         URL url = mock(URL.class);
-        WebScraperRequest request = new WebScraperRequest(url, null, null);
+        WebScraperRequest request = new WebScraperRequest(1, url, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         when(manager.electProvider()).thenReturn(Optional.of(defaultConnectionProvider));
@@ -77,7 +77,7 @@ public class ScrapSiteCallableTest {
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
         URL url = mock(URL.class);
-        WebScraperRequest request = new WebScraperRequest(url, null, null);
+        WebScraperRequest request = new WebScraperRequest(1, url, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         ArgumentCaptor<String> uaCaptor = ArgumentCaptor.forClass(String.class);
@@ -98,7 +98,7 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
         Optional<HTTPConnection> connection = RunnersTestsHelper.getNotFoundHTTPConnectionMock();
 
@@ -123,7 +123,7 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
         Optional<HTTPConnection> connection = RunnersTestsHelper.getSuccessHTTPConnectionMock();
 
@@ -148,7 +148,7 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
         Optional<HTTPConnection> connection = RunnersTestsHelper.getSuccessHTTPConnectionAndBrokenInputStreamMock();
 
@@ -167,7 +167,7 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         when(manager.electProvider()).thenReturn(Optional.of(defaultConnectionProvider));
