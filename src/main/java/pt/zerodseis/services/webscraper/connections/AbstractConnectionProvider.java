@@ -96,10 +96,9 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
     @Override
     public void closeConnection(HTTPConnection connection) {
         if (activeConnections.containsKey(connection.uuid())) {
-            HttpURLConnection httpURLConnection = activeConnections.get(connection.uuid());
-            httpURLConnection.disconnect();
-            activeConnections.remove(connection.uuid());
             freeConnectionsCounter.incrementAndGet();
+            HttpURLConnection httpURLConnection = activeConnections.remove(connection.uuid());
+            httpURLConnection.disconnect();
         }
     }
 

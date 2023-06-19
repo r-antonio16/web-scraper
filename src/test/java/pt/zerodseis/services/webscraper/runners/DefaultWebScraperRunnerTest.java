@@ -318,6 +318,6 @@ public class DefaultWebScraperRunnerTest {
         }
 
         // Accept only 5% of request failures
-        assertTrue(failedRequests <= 3 * requestsToGen * 0.00);
+        assertTrue(failedRequests <= 3 * requestsToGen * 0.05);
     }
 }

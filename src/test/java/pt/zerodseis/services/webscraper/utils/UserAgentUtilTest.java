@@ -22,7 +22,7 @@ public class UserAgentUtilTest {
     public void Should_ReturnDifferentUA_When_getRandomUserAgent_Is_Executed_Multiple_Times() {
         Set<String> randomUAs = new HashSet<>();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             randomUAs.add(UserAgentUtil.getRandomUserAgent());
         }
 
@@ -37,8 +37,8 @@ public class UserAgentUtilTest {
 
         assertNotNull(mobileUas);
         assertNotNull(desktopUas);
-        assertEquals(5, mobileUas.size());
-        assertEquals(5, desktopUas.size());
+        assertEquals(10, mobileUas.size());
+        assertEquals(10, desktopUas.size());
     }
 
     @Test
