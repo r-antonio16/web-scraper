@@ -2,7 +2,7 @@ package pt.zerodseis.services.webscraper.exceptions;
 
 import java.io.Serial;
 
-public class RenewExternalIpAddressException extends RuntimeException {
+public class RenewExternalIpAddressException extends ConnectionProviderRuntimeException {
 
     @Serial
     private static final long serialVersionUID = -1126994264151491897L;
