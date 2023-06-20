@@ -51,7 +51,7 @@ public class WebScraperResponseDtoMapperTest {
         assertEquals(response.request().id(), dto.requestId());
         assertEquals(response.content(), dto.content());
         assertEquals(response.statusCode(), dto.statusCode());
-        assertEquals(response.scrapTaskStatus(), dto.scrapTaskStatus());
+        assertEquals(response.siteScrapStatus(), dto.siteScrapStatus());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class WebScraperResponseDtoMapperTest {
         assertEquals(dto.requestId(), response.request().id());
         assertEquals(dto.content(), response.content());
         assertEquals(dto.statusCode(), response.statusCode());
-        assertEquals(dto.scrapTaskStatus(), response.scrapTaskStatus());
+        assertEquals(dto.siteScrapStatus(), response.siteScrapStatus());
     }
 
     @Test

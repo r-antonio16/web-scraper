@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import pt.zerodseis.services.webscraper.connections.WebScraperRequest;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
-import pt.zerodseis.services.webscraper.runners.ScrapTaskStatus;
+import pt.zerodseis.services.webscraper.runners.SiteScrapStatus;
 import pt.zerodseis.services.webscraper.web.models.HttpCookieDto;
 import pt.zerodseis.services.webscraper.web.models.WebScraperRequestDto;
 import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
@@ -120,12 +120,12 @@ public class MappersTestsHelper {
 
     public static WebScraperResponse getWebScraperResponse() {
         return new WebScraperResponse(getWebScraperRequest(), "content", HttpStatus.OK,
-                ScrapTaskStatus.REQUEST_SUCCESS);
+                SiteScrapStatus.SUCCESS);
     }
 
     public static WebScraperResponseDto getWebScraperResponseDto() {
         return new WebScraperResponseDto(1, "content", HttpStatus.OK,
-                ScrapTaskStatus.REQUEST_SUCCESS);
+                SiteScrapStatus.SUCCESS);
     }
 
     public static List<WebScraperResponseDto> getWebScraperResponseListDto(int itemsToGen) {
@@ -133,7 +133,7 @@ public class MappersTestsHelper {
 
         for (int i = 0; i < itemsToGen; i++) {
             list.add(new WebScraperResponseDto(i, "content " + i, HttpStatus.OK,
-                    ScrapTaskStatus.REQUEST_SUCCESS));
+                    SiteScrapStatus.SUCCESS));
         }
 
         return list;
@@ -148,7 +148,7 @@ public class MappersTestsHelper {
                         URI.create("https://www.test.com/" + i).toURL(),
                         new HttpCookie[]{getHttpCookie()}, "user-agent." + i);
                 list.add(new WebScraperResponse(request, "content", HttpStatus.OK,
-                        ScrapTaskStatus.REQUEST_SUCCESS));
+                        SiteScrapStatus.SUCCESS));
             } catch (MalformedURLException ignored) {
             }
         }

@@ -77,16 +77,16 @@ public class DefaultWebScraperRunner implements WebScraperRunner {
             responseFuture.cancel(true);
             log.error("The task to get response for request {} took more time than expected",
                     request);
-            return new WebScraperResponse(request, null, null, ScrapTaskStatus.REQUEST_TIMEOUT);
+            return new WebScraperResponse(request, null, null, SiteScrapStatus.REQUEST_TIMEOUT);
         } catch (InterruptedException e) {
             log.error("The task to get response for request {} was interrupted", request);
-            return new WebScraperResponse(request, null, null, ScrapTaskStatus.REQUEST_INTERRUPTED);
+            return new WebScraperResponse(request, null, null, SiteScrapStatus.INTERRUPTED);
         } catch (ExecutionException e) {
             log.error("The task to get response for request {} could not complete with success",
                     request);
         }
 
-        return new WebScraperResponse(request, null, null, ScrapTaskStatus.REQUEST_ERROR);
+        return new WebScraperResponse(request, null, null, SiteScrapStatus.FAIL);
     }
 
     @PreDestroy

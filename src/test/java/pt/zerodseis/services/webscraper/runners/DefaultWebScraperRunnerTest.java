@@ -84,7 +84,7 @@ public class DefaultWebScraperRunnerTest {
         assertNull(response.content());
         assertEquals(request, response.request());
         assertNull(response.statusCode());
-        assertEquals(ScrapTaskStatus.REQUEST_TIMEOUT, response.scrapTaskStatus());
+        assertEquals(SiteScrapStatus.REQUEST_TIMEOUT, response.siteScrapStatus());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class DefaultWebScraperRunnerTest {
         assertNull(response.content());
         assertEquals(request, response.request());
         assertNull(response.statusCode());
-        assertEquals(ScrapTaskStatus.REQUEST_ERROR, response.scrapTaskStatus());
+        assertEquals(SiteScrapStatus.FAIL, response.siteScrapStatus());
     }
 
     @Test
@@ -183,7 +183,7 @@ public class DefaultWebScraperRunnerTest {
             assertNotNull(response.request());
             assertNull(response.statusCode());
             assertTrue(requests.contains(response.request()));
-            assertEquals(ScrapTaskStatus.REQUEST_TIMEOUT, response.scrapTaskStatus());
+            assertEquals(SiteScrapStatus.REQUEST_TIMEOUT, response.siteScrapStatus());
         }
     }
 
@@ -216,8 +216,8 @@ public class DefaultWebScraperRunnerTest {
         for (WebScraperResponse response : responses) {
             assertNotNull(response.request());
             assertTrue(requests.contains(response.request()));
-            assertTrue(ScrapTaskStatus.REQUEST_ERROR.equals(response.scrapTaskStatus())
-                    || ScrapTaskStatus.REQUEST_SUCCESS.equals(response.scrapTaskStatus()));
+            assertTrue(SiteScrapStatus.FAIL.equals(response.siteScrapStatus())
+                    || SiteScrapStatus.SUCCESS.equals(response.siteScrapStatus()));
         }
     }
 
@@ -264,12 +264,12 @@ public class DefaultWebScraperRunnerTest {
                 failedRequests++;
                 assertTrue(requests1.contains(response.request()));
                 assertNull(response.statusCode());
-                assertEquals(ScrapTaskStatus.CONNECTION_UNAVAILABLE, response.scrapTaskStatus());
+                assertEquals(SiteScrapStatus.CONNECTION_UNAVAILABLE, response.siteScrapStatus());
             } else {
                 assertEquals("html content", response.content());
                 assertTrue(requests1.contains(response.request()));
                 assertEquals(HttpStatus.OK, response.statusCode());
-                assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
+                assertEquals(SiteScrapStatus.SUCCESS, response.siteScrapStatus());
             }
         }
 
@@ -283,12 +283,12 @@ public class DefaultWebScraperRunnerTest {
                 failedRequests++;
                 assertTrue(requests2.contains(response.request()));
                 assertNull(response.statusCode());
-                assertEquals(ScrapTaskStatus.CONNECTION_UNAVAILABLE, response.scrapTaskStatus());
+                assertEquals(SiteScrapStatus.CONNECTION_UNAVAILABLE, response.siteScrapStatus());
             } else {
                 assertEquals("html content", response.content());
                 assertTrue(requests2.contains(response.request()));
                 assertEquals(HttpStatus.OK, response.statusCode());
-                assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
+                assertEquals(SiteScrapStatus.SUCCESS, response.siteScrapStatus());
             }
         }
 
@@ -302,12 +302,12 @@ public class DefaultWebScraperRunnerTest {
                 failedRequests++;
                 assertTrue(requests3.contains(response.request()));
                 assertNull(response.statusCode());
-                assertEquals(ScrapTaskStatus.CONNECTION_UNAVAILABLE, response.scrapTaskStatus());
+                assertEquals(SiteScrapStatus.CONNECTION_UNAVAILABLE, response.siteScrapStatus());
             } else {
                 assertEquals("html content", response.content());
                 assertTrue(requests3.contains(response.request()));
                 assertEquals(HttpStatus.OK, response.statusCode());
-                assertEquals(ScrapTaskStatus.REQUEST_SUCCESS, response.scrapTaskStatus());
+                assertEquals(SiteScrapStatus.SUCCESS, response.siteScrapStatus());
             }
         }
 

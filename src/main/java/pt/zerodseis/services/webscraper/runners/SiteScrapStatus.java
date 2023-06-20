@@ -1,10 +1,10 @@
 package pt.zerodseis.services.webscraper.runners;
 
-public enum ScrapTaskStatus {
-    REQUEST_SUCCESS,
+public enum SiteScrapStatus {
+    SUCCESS,
     REQUEST_TIMEOUT,
-    REQUEST_INTERRUPTED,
-    REQUEST_ERROR,
+    INTERRUPTED,
+    FAIL,
     CONNECTION_UNAVAILABLE,
     PROVIDER_UNAVAILABLE
 }

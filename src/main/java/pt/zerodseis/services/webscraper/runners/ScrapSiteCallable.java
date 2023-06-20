@@ -31,7 +31,7 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
 
         if (providerOpt.isEmpty()) {
             return new WebScraperResponse(request, null, null,
-                    ScrapTaskStatus.PROVIDER_UNAVAILABLE);
+                    SiteScrapStatus.PROVIDER_UNAVAILABLE);
         }
 
         WebScraperConnectionProvider provider = providerOpt.get();
@@ -47,7 +47,7 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
 
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     return new WebScraperResponse(request, null,
-                            HttpStatusCode.valueOf(responseCode), ScrapTaskStatus.REQUEST_SUCCESS);
+                            HttpStatusCode.valueOf(responseCode), SiteScrapStatus.SUCCESS);
                 }
 
                 try (BufferedReader reader = new BufferedReader(
@@ -60,12 +60,12 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
                     }
 
                     return new WebScraperResponse(request, sj.toString(),
-                            HttpStatusCode.valueOf(responseCode), ScrapTaskStatus.REQUEST_SUCCESS);
+                            HttpStatusCode.valueOf(responseCode), SiteScrapStatus.SUCCESS);
                 }
             }
 
             return new WebScraperResponse(request, null, null,
-                    ScrapTaskStatus.CONNECTION_UNAVAILABLE);
+                    SiteScrapStatus.CONNECTION_UNAVAILABLE);
         } catch (IOException e) {
             throw new SiteConnectionException(
                     String.format("Provider %s could not build the response for request %s",

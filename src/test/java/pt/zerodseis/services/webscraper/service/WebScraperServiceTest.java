@@ -78,7 +78,7 @@ public class WebScraperServiceTest {
         assertEquals(response.request().id(), responseDto.requestId());
         assertEquals(response.content(), responseDto.content());
         assertEquals(response.statusCode(), responseDto.statusCode());
-        assertEquals(response.scrapTaskStatus(), responseDto.scrapTaskStatus());
+        assertEquals(response.siteScrapStatus(), responseDto.siteScrapStatus());
     }
 
     @Test
@@ -124,8 +124,8 @@ public class WebScraperServiceTest {
             assertEquals(response.get(i).request().id(), responseListDto.get(i).requestId());
             assertEquals(response.get(i).content(), responseListDto.get(i).content());
             assertEquals(response.get(i).statusCode(), responseListDto.get(i).statusCode());
-            assertEquals(response.get(i).scrapTaskStatus(),
-                    responseListDto.get(i).scrapTaskStatus());
+            assertEquals(response.get(i).siteScrapStatus(),
+                    responseListDto.get(i).siteScrapStatus());
         }
     }
 
