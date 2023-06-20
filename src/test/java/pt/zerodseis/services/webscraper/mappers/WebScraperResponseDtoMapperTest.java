@@ -39,6 +39,11 @@ public class WebScraperResponseDtoMapperTest {
         public HttpCookieDtoMapper httpCookieDtoMapper() {
             return Mappers.getMapper(HttpCookieDtoMapper.class);
         }
+
+        @Bean
+        public HttpStatusMapper httpStatusMapper() {
+            return Mappers.getMapper(HttpStatusMapper.class);
+        }
     }
 
     @Test

@@ -56,7 +56,7 @@ public class WebScraperControllerTest {
 
     @ParameterizedTest
     @MethodSource("getScrapSite400RequestObjectsToTest")
-    public void should_SiteEndpointReturn400_When_BlankCookieValue(WebScraperRequestDto requestDto,
+    public void should_SiteEndpointReturn400_When_InvalidRequestIsPassed(WebScraperRequestDto requestDto,
             String error) throws Exception {
 
         mockMvc.perform(post("/api/v1/scraper/site")
@@ -95,7 +95,7 @@ public class WebScraperControllerTest {
 
     @ParameterizedTest
     @MethodSource("getScrapSites200RequestObjectsToTest")
-    public void should_SitesEndpointReturn200_When_ValidRequestObjectIsPassed(
+    public void should_SitesEndpointReturn200_When_ValidRequestIsPassed(
             List<WebScraperRequestDto> requestDto, List<WebScraperResponseDto> responseDto)
             throws Exception {
         reset(service);
@@ -127,7 +127,7 @@ public class WebScraperControllerTest {
 
     @ParameterizedTest
     @MethodSource("getScrapSites400RequestObjectsToTest")
-    public void should_SitesEndpointReturn400_When_InvalidRequestObjectIsPassed(
+    public void should_SitesEndpointReturn400_When_InvalidRequestIsPassed(
             List<WebScraperRequestDto> requestListDto, String error) throws Exception {
         mockMvc.perform(post("/api/v1/scraper/sites")
                         .content(objectMapper.writeValueAsBytes(

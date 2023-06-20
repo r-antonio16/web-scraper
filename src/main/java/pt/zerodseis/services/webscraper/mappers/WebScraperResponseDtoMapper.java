@@ -5,7 +5,8 @@ import org.mapstruct.Mapping;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
 import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
 
-@Mapper(uses = {WebScraperRequestDtoMapper.class, HttpCookieDtoMapper.class})
+@Mapper(uses = {WebScraperRequestDtoMapper.class, HttpCookieDtoMapper.class,
+        HttpStatusMapper.class})
 public interface WebScraperResponseDtoMapper {
 
     @Mapping(source = "request.id", target = "requestId")

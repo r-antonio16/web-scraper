@@ -24,6 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
 import pt.zerodseis.services.webscraper.mappers.HttpCookieDtoMapper;
+import pt.zerodseis.services.webscraper.mappers.HttpStatusMapper;
 import pt.zerodseis.services.webscraper.mappers.MappersTestsHelper;
 import pt.zerodseis.services.webscraper.mappers.WebScraperRequestDtoMapper;
 import pt.zerodseis.services.webscraper.mappers.WebScraperResponseDtoMapper;
@@ -60,6 +61,11 @@ public class WebScraperServiceTest {
         @Bean
         public HttpCookieDtoMapper httpCookieDtoMapper() {
             return Mappers.getMapper(HttpCookieDtoMapper.class);
+        }
+
+        @Bean
+        public HttpStatusMapper httpStatusMapper() {
+            return Mappers.getMapper(HttpStatusMapper.class);
         }
     }
 
