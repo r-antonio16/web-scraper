@@ -22,9 +22,17 @@ import pt.zerodseis.services.webscraper.web.models.ApiError;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleHttpMessageNotReadableException() {
+    public ResponseEntity<ApiError> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex) {
+        String errorMsg;
+        if (ex.getLocalizedMessage().startsWith("Required request body is missing")) {
+            errorMsg = "Required request body is missing";
+        } else {
+            errorMsg = ex.getLocalizedMessage();
+        }
+
         ApiError apiError = buildBadRequestDataError()
-                .errors(List.of("Required request body is missing"))
+                .errors(List.of(errorMsg))
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);

@@ -12,8 +12,8 @@
   <groupId>pt.zerodseis.services</groupId>
   <artifactId>web-scraper</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>web-scraper</name>
-  <description>web-scraper</description>
+  <name>Web Scraper</name>
+  <description>Microservice used to scrap auto sites</description>
 
   <properties>
     <java.version>20</java.version>
@@ -31,6 +31,16 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
       <version>${mapstruct.version}</version>
@@ -40,11 +50,6 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
     <dependency>
