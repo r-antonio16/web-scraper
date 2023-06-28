@@ -3,6 +3,7 @@ package pt.zerodseis.services.webscraper.connections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -48,7 +49,8 @@ public class AbstractConnectionProviderTest {
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);
@@ -66,7 +68,8 @@ public class AbstractConnectionProviderTest {
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(null);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);
@@ -81,14 +84,17 @@ public class AbstractConnectionProviderTest {
     public void Should_Return_HTPPConnection_When_Status_Is_Up(String clazz) throws IOException {
         InetAddress ip = InetAddress.getByName("100.0.0.1");
         URL siteUrl = mock(URL.class);
-        when(siteUrl.openConnection(any(Proxy.class))).thenReturn(mock(HttpURLConnection.class));
+        HttpURLConnection connection = mock(HttpURLConnection.class);
+        when(siteUrl.openConnection(any(Proxy.class))).thenReturn(connection);
+        when(connection.getResponseCode()).thenReturn(200);
 
         try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
             util.when(() -> IpAddressUtil.getExternalIpAddress(
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);
@@ -104,6 +110,42 @@ public class AbstractConnectionProviderTest {
     }
 
     @ParameterizedTest
+    @CsvSource({
+            "TorConnectionProvider,404", "DefaultConnectionProvider,404",
+            "TorConnectionProvider,500", "DefaultConnectionProvider,500",
+            "TorConnectionProvider,301", "DefaultConnectionProvider,301"
+    })
+    public void Should_Throw_Exception_When_ConnectionStatus_Is_Not_Ok(String clazz,
+            int responseCode) throws IOException {
+        InetAddress ip = InetAddress.getByName("100.0.0.1");
+        URL siteUrl = mock(URL.class);
+        HttpURLConnection connection = mock(HttpURLConnection.class);
+        when(siteUrl.openConnection(any(Proxy.class))).thenReturn(connection);
+        when(connection.getResponseCode()).thenReturn(responseCode);
+
+        try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
+            util.when(() -> IpAddressUtil.getExternalIpAddress(
+                            any(ConnectionsTestsHelper.getClassType(clazz))))
+                    .thenReturn(ip);
+
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
+                    10);
+
+            assertNotNull(provider);
+            assertEquals(ip, provider.getIp());
+            assertEquals(10, provider.getFreeConnections());
+
+            Optional<HTTPConnection> optionalHTTPConnection = provider.openConnection(siteUrl);
+
+            assertEquals(9, provider.getFreeConnections());
+            assertTrue(optionalHTTPConnection.isPresent());
+            assertEquals(responseCode, optionalHTTPConnection.get().getResponseCode());
+            assertEquals(WebScraperConnectionProviderStatus.UP, provider.getStatus());
+        }
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"TorConnectionProvider", "DefaultConnectionProvider"})
     public void Should_Return_Empty_HTTPConnection_When_Status_Is_Down(String clazz)
             throws IOException {
@@ -114,7 +156,8 @@ public class AbstractConnectionProviderTest {
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(null);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);
@@ -138,13 +181,15 @@ public class AbstractConnectionProviderTest {
         URL siteUrl = mock(URL.class);
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(siteUrl.openConnection(any(Proxy.class))).thenReturn(connection);
+        when(connection.getResponseCode()).thenReturn(200);
 
         try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
             util.when(() -> IpAddressUtil.getExternalIpAddress(
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);
@@ -180,14 +225,17 @@ public class AbstractConnectionProviderTest {
         for (int i = 0; i < requestedSites; i++) {
             URL site = mock(URL.class);
             sites.add(site);
-            when(site.openConnection(any(Proxy.class))).thenReturn(mock(HttpURLConnection.class));
+            HttpURLConnection connection = mock(HttpURLConnection.class);
+            when(site.openConnection(any(Proxy.class))).thenReturn(connection);
+            when(connection.getResponseCode()).thenReturn(200);
         }
 
         try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
             util.when(() -> IpAddressUtil.getExternalIpAddress(
                     any(ConnectionsTestsHelper.getClassType(clazz)))).thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     maxConnections);
 
             assertNotNull(provider);
@@ -197,8 +245,9 @@ public class AbstractConnectionProviderTest {
 
             try (ExecutorService es = Executors.newCachedThreadPool()) {
                 for (int i = 0; i < requestedSites; i++) {
-                    es.execute(ConnectionsTestsHelper.getOpenConnectionRunnable(provider, sites.get(i),
-                            connections));
+                    es.execute(
+                            ConnectionsTestsHelper.getOpenConnectionRunnable(provider, sites.get(i),
+                                    connections));
                 }
                 ConnectionsTestsHelper.awaitTerminationAfterShutdown(es);
             }
@@ -230,14 +279,17 @@ public class AbstractConnectionProviderTest {
         for (int i = 0; i < activeConnections; i++) {
             URL site = mock(URL.class);
             sites.add(site);
-            when(site.openConnection(any(Proxy.class))).thenReturn(mock(HttpURLConnection.class));
+            HttpURLConnection connection = mock(HttpURLConnection.class);
+            when(site.openConnection(any(Proxy.class))).thenReturn(connection);
+            when(connection.getResponseCode()).thenReturn(200);
         }
 
         try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
             util.when(() -> IpAddressUtil.getExternalIpAddress(
                     any(ConnectionsTestsHelper.getClassType(clazz)))).thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     activeConnections);
 
             assertNotNull(provider);
@@ -247,8 +299,9 @@ public class AbstractConnectionProviderTest {
 
             try (ExecutorService es = Executors.newCachedThreadPool()) {
                 for (int i = 0; i < activeConnections; i++) {
-                    es.execute(ConnectionsTestsHelper.getOpenConnectionRunnable(provider, sites.get(i),
-                            connections));
+                    es.execute(
+                            ConnectionsTestsHelper.getOpenConnectionRunnable(provider, sites.get(i),
+                                    connections));
                 }
                 ConnectionsTestsHelper.awaitTerminationAfterShutdown(es);
             }
@@ -269,7 +322,8 @@ public class AbstractConnectionProviderTest {
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(null);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);
@@ -288,13 +342,15 @@ public class AbstractConnectionProviderTest {
         URL siteUrl = mock(URL.class);
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(siteUrl.openConnection(any(Proxy.class))).thenReturn(connection);
+        when(connection.getResponseCode()).thenReturn(200);
 
         try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
             util.when(() -> IpAddressUtil.getExternalIpAddress(
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     1);
 
             assertNotNull(provider);
@@ -320,14 +376,15 @@ public class AbstractConnectionProviderTest {
                             any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);
             assertEquals(ip, provider.getIp());
             assertEquals(10, provider.getFreeConnections());
             assertEquals(WebScraperConnectionProviderStatus.UP, provider.getStatus());
-            assertEquals(10, provider.score());
+            assertEquals(1000, provider.score());
         }
     }
 
@@ -341,6 +398,7 @@ public class AbstractConnectionProviderTest {
         HttpCookie cookie2 = new HttpCookie("locale", "pt_PT");
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(siteUrl.openConnection(any(Proxy.class))).thenReturn(connection);
+        when(connection.getResponseCode()).thenReturn(200);
         StringBuilder sb = new StringBuilder();
         String userAgent = UserAgentUtil.getRandomUserAgent();
 
@@ -353,7 +411,8 @@ public class AbstractConnectionProviderTest {
                                     any(ConnectionsTestsHelper.getClassType(clazz))))
                     .thenReturn(ip);
 
-            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(clazz,
+            WebScraperConnectionProvider provider = ConnectionsTestsHelper.getProviderInstance(
+                    clazz,
                     10);
 
             assertNotNull(provider);

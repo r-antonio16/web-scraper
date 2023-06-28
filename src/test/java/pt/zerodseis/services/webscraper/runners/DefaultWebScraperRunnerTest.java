@@ -40,7 +40,7 @@ public class DefaultWebScraperRunnerTest {
         TorConnectionProvider torProviderMock = mock(TorConnectionProvider.class);
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                List.of(torProviderMock), defaultProviderMock);
+                List.of(torProviderMock, defaultProviderMock));
         DefaultWebScraperRunner runner = new DefaultWebScraperRunner(providerManager, 1,
                 TimeUnit.SECONDS);
 
@@ -51,7 +51,7 @@ public class DefaultWebScraperRunnerTest {
     public void Should_CloseExecutorService_When_DestroyMethodIsCalled() {
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                Collections.emptyList(), defaultProviderMock);
+                List.of(defaultProviderMock));
 
         DefaultWebScraperRunner runner = new DefaultWebScraperRunner(providerManager, 1,
                 TimeUnit.SECONDS);
@@ -59,9 +59,9 @@ public class DefaultWebScraperRunnerTest {
         runner.destroy();
         assertNotNull(runner);
         assertThrows(RejectedExecutionException.class,
-                () -> runner.scrapSite(new WebScraperRequest(null,null, null, null)));
+                () -> runner.scrapSite(new WebScraperRequest(null, null, null, null)));
         assertThrows(RejectedExecutionException.class,
-                () -> runner.scrapSites(List.of(new WebScraperRequest(null,null, null, null))));
+                () -> runner.scrapSites(List.of(new WebScraperRequest(null, null, null, null))));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class DefaultWebScraperRunnerTest {
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         WebScraperRequest request = RunnersTestsHelper.generateWebScraperRequests(1).get(0);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                Collections.emptyList(), defaultProviderMock);
+                List.of(defaultProviderMock));
         when(defaultProviderMock.score()).thenReturn(10);
         when(defaultProviderMock.openConnection(any(), any(), any())).thenAnswer(i -> {
             Thread.sleep(5000);
@@ -92,7 +92,7 @@ public class DefaultWebScraperRunnerTest {
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         WebScraperRequest request = RunnersTestsHelper.generateWebScraperRequests(1).get(0);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                Collections.emptyList(), defaultProviderMock);
+                List.of(defaultProviderMock));
         when(defaultProviderMock.score()).thenReturn(10);
         when(defaultProviderMock.openConnection(any(), any(), any())).thenThrow(IOException.class);
 
@@ -114,7 +114,7 @@ public class DefaultWebScraperRunnerTest {
         TorConnectionProvider loserProviderMock = mock(TorConnectionProvider.class);
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                List.of(winnerProviderMock, loserProviderMock), defaultProviderMock);
+                List.of(winnerProviderMock, loserProviderMock, defaultProviderMock));
         WebScraperRequest request = RunnersTestsHelper.generateWebScraperRequests(1).get(0);
         Optional<HTTPConnection> connectionOptMock = RunnersTestsHelper.getSuccessHTTPConnectionMock();
         when(winnerProviderMock.score()).thenReturn(10);
@@ -142,7 +142,7 @@ public class DefaultWebScraperRunnerTest {
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         WebScraperRequest request = RunnersTestsHelper.generateWebScraperRequests(1).get(0);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                Collections.emptyList(), defaultProviderMock);
+                List.of(defaultProviderMock));
         Optional<HTTPConnection> connectionOptMock = RunnersTestsHelper.getSuccessHTTPConnectionMock();
         when(defaultProviderMock.score()).thenReturn(10);
         when(defaultProviderMock.openConnection(any(), any(), any())).thenReturn(connectionOptMock);
@@ -163,7 +163,7 @@ public class DefaultWebScraperRunnerTest {
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         List<WebScraperRequest> requests = RunnersTestsHelper.generateWebScraperRequests(10);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                Collections.emptyList(), defaultProviderMock);
+                List.of(defaultProviderMock));
         when(defaultProviderMock.score()).thenReturn(10);
         when(defaultProviderMock.openConnection(any(), any(), any())).thenAnswer(i -> {
             Thread.sleep(3000);
@@ -192,7 +192,7 @@ public class DefaultWebScraperRunnerTest {
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
         List<WebScraperRequest> requests = RunnersTestsHelper.generateWebScraperRequests(10);
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                Collections.emptyList(), defaultProviderMock);
+                List.of(defaultProviderMock));
         AtomicInteger openConnectionCalls = new AtomicInteger();
         Optional<HTTPConnection> connectionOptMock = RunnersTestsHelper.getSuccessHTTPConnectionMock();
         when(defaultProviderMock.score()).thenReturn(10);
@@ -233,7 +233,7 @@ public class DefaultWebScraperRunnerTest {
         DefaultConnectionProvider defaultProvider = spy(
                 RunnersTestsHelper.getDefaultConnectionProvider(maxActiveConnections));
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
-                List.of(torProvider1, torProvider2), defaultProvider);
+                List.of(torProvider1, torProvider2, defaultProvider));
 
         List<WebScraperRequest> requests1 = RunnersTestsHelper.generateWebScraperRequests(
                 requestsToGen, connectionWaitMillis,
@@ -256,6 +256,8 @@ public class DefaultWebScraperRunnerTest {
         assertEquals(requests1.size(), responses1.size());
 
         int failedRequests = 0;
+        List<SiteScrapStatus> expectedFailedStatus = List.of(SiteScrapStatus.CONNECTION_UNAVAILABLE,
+                SiteScrapStatus.PROVIDER_UNAVAILABLE);
 
         for (WebScraperResponse response : responses1) {
             assertNotNull(response.request());
@@ -264,7 +266,7 @@ public class DefaultWebScraperRunnerTest {
                 failedRequests++;
                 assertTrue(requests1.contains(response.request()));
                 assertNull(response.statusCode());
-                assertEquals(SiteScrapStatus.CONNECTION_UNAVAILABLE, response.siteScrapStatus());
+                assertTrue(expectedFailedStatus.contains(response.siteScrapStatus()));
             } else {
                 assertEquals("html content", response.content());
                 assertTrue(requests1.contains(response.request()));
@@ -283,7 +285,7 @@ public class DefaultWebScraperRunnerTest {
                 failedRequests++;
                 assertTrue(requests2.contains(response.request()));
                 assertNull(response.statusCode());
-                assertEquals(SiteScrapStatus.CONNECTION_UNAVAILABLE, response.siteScrapStatus());
+                assertTrue(expectedFailedStatus.contains(response.siteScrapStatus()));
             } else {
                 assertEquals("html content", response.content());
                 assertTrue(requests2.contains(response.request()));
@@ -302,7 +304,7 @@ public class DefaultWebScraperRunnerTest {
                 failedRequests++;
                 assertTrue(requests3.contains(response.request()));
                 assertNull(response.statusCode());
-                assertEquals(SiteScrapStatus.CONNECTION_UNAVAILABLE, response.siteScrapStatus());
+                assertTrue(expectedFailedStatus.contains(response.siteScrapStatus()));
             } else {
                 assertEquals("html content", response.content());
                 assertTrue(requests3.contains(response.request()));

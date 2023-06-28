@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pt.zerodseis.services.webscraper.connections.HTTPConnection;
@@ -68,6 +70,23 @@ public class IpAddressUtilTest {
         assertNull(address);
         verify(httpConnection, times(1)).getInputStream();
         verify(provider, times(1)).closeConnection(any(HTTPConnection.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {301, 404, 500})
+    public void Should_ThrowException_When_Http_ResponseCode_Is_Not_Ok(int responseCode)
+            throws IOException {
+        InputStream is = new ByteArrayInputStream(new byte[]{});
+        HttpURLConnection httpURLConnection = mock(HttpURLConnection.class);
+        HTTPConnection httpConnection = spy(
+                new HTTPConnection(UUID.randomUUID(), httpURLConnection));
+
+        when(httpURLConnection.getResponseCode()).thenReturn(responseCode);
+        when(httpConnection.getInputStream()).thenReturn(is);
+        when(provider.openConnection(any(URL.class))).thenReturn(Optional.of(httpConnection));
+
+        assertThrows(SiteConnectionException.class,
+                () -> IpAddressUtil.getExternalIpAddress(provider));
     }
 
     @Test

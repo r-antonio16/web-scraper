@@ -20,8 +20,13 @@ import pt.zerodseis.services.webscraper.utils.IpAddressUtil;
 @Log4j2
 abstract class AbstractConnectionProvider implements WebScraperConnectionProvider {
 
+    private static final int PERCENTAGE_FACTOR = 100;
+    private static final int DEFAULT_SCORE = 0;
+
     protected final Map<UUID, HttpURLConnection> activeConnections;
-    protected final AtomicInteger freeConnectionsCounter;
+    protected final AtomicInteger freeConnections;
+    protected final AtomicInteger totalConnections;
+    protected final AtomicInteger failedConnections;
     protected final int maxActiveConnections;
     protected final AtomicReference<WebScraperConnectionProviderStatus> status;
     protected final Proxy proxy;
@@ -29,7 +34,9 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
 
     public AbstractConnectionProvider(int maxActiveConnections, Proxy proxy) {
         this.activeConnections = new ConcurrentHashMap<>();
-        this.freeConnectionsCounter = new AtomicInteger(maxActiveConnections);
+        this.freeConnections = new AtomicInteger(maxActiveConnections);
+        this.totalConnections = new AtomicInteger();
+        this.failedConnections = new AtomicInteger();
         this.status = new AtomicReference<>(WebScraperConnectionProviderStatus.UP);
         this.maxActiveConnections = maxActiveConnections;
         this.proxy = proxy;
@@ -50,12 +57,12 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
 
     @Override
     public int getFreeConnections() {
-        return freeConnectionsCounter.get();
+        return freeConnections.get();
     }
 
     @Override
     public boolean isActiveConnectionsLimitReached() {
-        return freeConnectionsCounter.get() < 1;
+        return freeConnections.get() < 1;
     }
 
     @Override
@@ -66,26 +73,35 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
             return Optional.empty();
         }
 
-        freeConnectionsCounter.decrementAndGet();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
+        freeConnections.decrementAndGet();
 
-        if (StringUtils.hasText(userAgent)) {
-            connection.setRequestProperty("User-Agent", userAgent);
-        }
+        totalConnections.incrementAndGet();
 
-        if (cookies != null && cookies.length > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (HttpCookie cookie : cookies) {
-                sb.append(String.format("%s=%s; ", cookie.getName(), cookie.getValue()));
+        boolean failedConnectionAlreadyIncremented = false;
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
+
+            setConnectionProperties(connection, userAgent, cookies);
+
+            connection.connect();
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                failedConnections.incrementAndGet();
             }
 
-            connection.setRequestProperty("Cookie", sb.toString());
-        }
+            UUID uuid = UUID.randomUUID();
+            activeConnections.put(uuid, connection);
+            return Optional.of(new HTTPConnection(uuid, connection));
 
-        connection.connect();
-        UUID uuid = UUID.randomUUID();
-        activeConnections.put(uuid, connection);
-        return Optional.of(new HTTPConnection(uuid, connection));
+        } catch (IOException e) {
+            if (!failedConnectionAlreadyIncremented) {
+                failedConnections.incrementAndGet();
+            }
+            throw e;
+        }
     }
 
     @Override
@@ -96,7 +112,7 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
     @Override
     public void closeConnection(HTTPConnection connection) {
         if (activeConnections.containsKey(connection.uuid())) {
-            freeConnectionsCounter.incrementAndGet();
+            freeConnections.incrementAndGet();
             HttpURLConnection httpURLConnection = activeConnections.remove(connection.uuid());
             httpURLConnection.disconnect();
         }
@@ -113,11 +129,16 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
 
     @Override
     public int score() {
-        if (!WebScraperConnectionProviderStatus.UP.equals(status.get())) {
-            return 0;
+        if (!isConnectionProviderUp()) {
+            return DEFAULT_SCORE;
         }
 
-        return freeConnectionsCounter.get();
+        if (hasNoFailedConnections()) {
+            return freeConnections.get() * PERCENTAGE_FACTOR;
+        }
+
+        double successConnectionsRate = calculateSuccessConnectionsRate();
+        return calculateScoreWithSuccessConnectionsRate(successConnectionsRate);
     }
 
     @PreDestroy
@@ -128,7 +149,46 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
             });
 
             activeConnections.clear();
-            freeConnectionsCounter.set(maxActiveConnections);
+            freeConnections.set(maxActiveConnections);
+        }
+    }
+
+    private boolean isConnectionProviderUp() {
+        return WebScraperConnectionProviderStatus.UP.equals(status.get());
+    }
+
+    private boolean hasNoFailedConnections() {
+        return failedConnections.get() == 0;
+    }
+
+    private double calculateSuccessConnectionsRate() {
+        int totalConnections = this.totalConnections.get();
+        int successfulConnections = totalConnections - failedConnections.get();
+
+        if (totalConnections == 0) {
+            return 0.0;
+        }
+
+        return (double) successfulConnections / totalConnections;
+    }
+
+    private int calculateScoreWithSuccessConnectionsRate(double successConnectionsRate) {
+        return (int) (freeConnections.get() * successConnectionsRate * PERCENTAGE_FACTOR);
+    }
+
+    private void setConnectionProperties(HttpURLConnection connection, String userAgent,
+            HttpCookie... cookies) {
+        if (StringUtils.hasText(userAgent)) {
+            connection.setRequestProperty("User-Agent", userAgent);
+        }
+
+        if (cookies != null && cookies.length > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (HttpCookie cookie : cookies) {
+                sb.append(String.format("%s=%s; ", cookie.getName(), cookie.getValue()));
+            }
+
+            connection.setRequestProperty("Cookie", sb.toString());
         }
     }
 }

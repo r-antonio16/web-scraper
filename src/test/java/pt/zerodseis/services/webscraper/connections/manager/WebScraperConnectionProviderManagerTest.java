@@ -18,34 +18,16 @@ import pt.zerodseis.services.webscraper.connections.WebScraperConnectionProvider
 public class WebScraperConnectionProviderManagerTest {
 
     @Test
-    public void Should_ReturnDefaultProvider_When_OtherProvidersDoesNotHaveScore() {
-        TorConnectionProvider provider1 = mock(TorConnectionProvider.class);
-        TorConnectionProvider provider2 = mock(TorConnectionProvider.class);
-        DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
-        when(provider1.score()).thenReturn(1);
-        when(provider2.score()).thenReturn(1);
-        when(defaultProviderMock.score()).thenReturn(1);
-
-        WebScraperConnectionProviderManager providersManager = new WebScraperConnectionProviderManager(
-                List.of(provider1, provider2), defaultProviderMock);
-
-        Optional<WebScraperConnectionProvider> provider = providersManager.electProvider();
-
-        assertTrue(provider.isPresent());
-        assertEquals(defaultProviderMock, provider.get());
-    }
-
-    @Test
-    public void Should_ReturnNonDefaultProvider_When_AnyProviderHasScore() {
+    public void Should_ReturnProviderWithHighestScore_When_ProvidersHasScoreGreaterThanZero() {
         TorConnectionProvider winnerProviderMock = mock(TorConnectionProvider.class);
         TorConnectionProvider loserProviderMock = mock(TorConnectionProvider.class);
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
-        when(winnerProviderMock.score()).thenReturn(10);
+        when(winnerProviderMock.score()).thenReturn(25);
         when(loserProviderMock.score()).thenReturn(5);
         when(defaultProviderMock.score()).thenReturn(15);
 
         WebScraperConnectionProviderManager providersManager = new WebScraperConnectionProviderManager(
-                List.of(winnerProviderMock, loserProviderMock), defaultProviderMock);
+                List.of(winnerProviderMock, loserProviderMock, defaultProviderMock));
 
         Optional<WebScraperConnectionProvider> provider = providersManager.electProvider();
 
@@ -58,12 +40,12 @@ public class WebScraperConnectionProviderManagerTest {
         TorConnectionProvider provider1 = mock(TorConnectionProvider.class);
         TorConnectionProvider provider2 = mock(TorConnectionProvider.class);
         DefaultConnectionProvider defaultProviderMock = mock(DefaultConnectionProvider.class);
-        when(provider1.score()).thenReturn(1);
-        when(provider2.score()).thenReturn(1);
+        when(provider1.score()).thenReturn(0);
+        when(provider2.score()).thenReturn(0);
         when(defaultProviderMock.score()).thenReturn(0);
 
         WebScraperConnectionProviderManager providersManager = new WebScraperConnectionProviderManager(
-                List.of(provider1, provider2), defaultProviderMock);
+                List.of(provider1, provider2, defaultProviderMock));
 
         Optional<WebScraperConnectionProvider> provider = providersManager.electProvider();
 

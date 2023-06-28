@@ -32,6 +32,7 @@ public class TorConnectionProviderTest {
         URL siteUrl = mock(URL.class);
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(siteUrl.openConnection(any(Proxy.class))).thenReturn(connection);
+        when(connection.getResponseCode()).thenReturn(200);
 
         try (MockedStatic<IpAddressUtil> util = mockStatic(IpAddressUtil.class)) {
             util.when(() -> IpAddressUtil.getExternalIpAddress(any(TorConnectionProvider.class)))
