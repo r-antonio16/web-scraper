@@ -222,7 +222,7 @@ public class DefaultWebScraperRunnerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"15,10,100", "10,20,100", "15,10,0", "10,20,0", "7,25,100", "6,25,0", "10,50,150",
+    @CsvSource({"15,10,100", "10,20,100", "15,10,0", "10,20,0", "8,25,100", "6,25,0", "10,50,150",
             "8,30,100"})
     public void Should_dispatchAllRequestsWithSuccess_When_MultipleSitesRequests(
             int maxActiveConnections, int requestsToGen, int connectionWaitMillis) {

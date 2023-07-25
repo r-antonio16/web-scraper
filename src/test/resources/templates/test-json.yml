@@ -1,0 +1,8 @@
+type: json
+site: test.com
+single:
+  map:
+    - source: name
+      target: brand
+    - source: year
+      target: registrationDate

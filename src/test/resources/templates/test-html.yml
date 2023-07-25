@@ -1,0 +1,29 @@
+type: html
+site: test.com
+map:
+  - loop:
+      - expression: item from $('.div > div')
+      - map:
+          - source: item.name
+          - target: name
+
+  - condition:
+      - if:
+          - expression: $('.div > div').text != null
+          - map:
+              - source: $('.div > div').name
+              - target: age
+      - else-if:
+          - expression: $('.div > div').text != null
+          - map:
+              - source: $('.div > div').text
+              - target: age
+      - else:
+          - map:
+              - source: $('.div > div').text
+              - target: age
+  - loop:
+        - expression: phone from $('.div > div')
+        - map:
+              - source: phone.number
+              - target: number
