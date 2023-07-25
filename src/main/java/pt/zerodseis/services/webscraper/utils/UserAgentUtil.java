@@ -2,14 +2,14 @@ package pt.zerodseis.services.webscraper.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import pt.zerodseis.services.webscraper.exceptions.ReadUserAgentJsonException;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import pt.zerodseis.services.webscraper.exceptions.ReadUserAgentJsonException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserAgentUtil {

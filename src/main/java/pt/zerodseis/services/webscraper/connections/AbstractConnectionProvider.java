@@ -144,9 +144,7 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
     @PreDestroy
     protected void destroy() {
         if (getFreeConnections() < maxActiveConnections) {
-            activeConnections.forEach((uuid, conn) -> {
-                conn.disconnect();
-            });
+            activeConnections.forEach((uuid, conn) -> conn.disconnect());
 
             activeConnections.clear();
             freeConnections.set(maxActiveConnections);

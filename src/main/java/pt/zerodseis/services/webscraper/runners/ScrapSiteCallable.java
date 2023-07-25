@@ -25,7 +25,7 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
     private final WebScraperRequest request;
 
     @Override
-    public WebScraperResponse call() throws Exception {
+    public WebScraperResponse call() {
         Optional<HTTPConnection> connectionOpt = Optional.empty();
         Optional<WebScraperConnectionProvider> providerOpt = providerManager.electProvider();
 
