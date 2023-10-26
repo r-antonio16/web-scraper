@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import pt.zerodseis.services.webscraper.connections.HTTPConnectionContentType;
 import pt.zerodseis.services.webscraper.connections.WebScraperRequest;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
 import pt.zerodseis.services.webscraper.runners.SiteScrapStatus;
@@ -46,7 +47,7 @@ public class MappersTestsHelper {
     public static WebScraperRequest getWebScraperRequest() {
         try {
             return new WebScraperRequest(1, URI.create("https://www.test.com").toURL(),
-                    new HttpCookie[]{getHttpCookie()}, "user-agent");
+                    new HttpCookie[]{getHttpCookie()}, "user-agent", null);
         } catch (MalformedURLException e) {
             return null;
         }
@@ -54,56 +55,56 @@ public class MappersTestsHelper {
 
     public static WebScraperRequestDto getWebScraperRequestDto() {
         return new WebScraperRequestDto(1, "https://www.test.com", List.of(getHttpCookieDto()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithNullId() {
         return new WebScraperRequestDto(null, "https://www.test.com", List.of(getHttpCookieDto()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithNullUrl() {
         return new WebScraperRequestDto(1, null, List.of(getHttpCookieDto()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithNullCookies() {
         return new WebScraperRequestDto(1, "https://www.test.com", null,
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithEmptyCookies() {
         return new WebScraperRequestDto(1, "https://www.test.com", Collections.emptyList(),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithBlankUrl() {
         return new WebScraperRequestDto(1, "   ", List.of(getHttpCookieDto()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithCookieNullName() {
         return new WebScraperRequestDto(1, "https://www.test.com",
                 List.of(getHttpCookieDto(), getHttpCookieDtoWithNullName()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithCookieBlankName() {
         return new WebScraperRequestDto(1, "https://www.test.com",
                 List.of(getHttpCookieDto(), getHttpCookieDtoWithNullName()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithCookieNullValue() {
         return new WebScraperRequestDto(1, "https://www.test.com",
                 List.of(getHttpCookieDto(), getHttpCookieDtoWithNullValue()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static WebScraperRequestDto getWebScraperRequestDtoWithCookieBlankValue() {
         return new WebScraperRequestDto(1, "https://www.test.com",
                 List.of(getHttpCookieDto(), getHttpCookieDtoWithBlankValue()),
-                "user-agent");
+                "user-agent", HTTPConnectionContentType.STATIC_HTML_PAGE);
     }
 
     public static List<WebScraperRequestDto> getWebScraperRequestListDto(int itemsToGen) {
@@ -112,7 +113,7 @@ public class MappersTestsHelper {
         for (int i = 0; i < itemsToGen; i++) {
             list.add(new WebScraperRequestDto(i, "https://www.test.com/" + i,
                     List.of(getHttpCookieDto()),
-                    "user-agent-" + i));
+                    "user-agent-" + i, HTTPConnectionContentType.STATIC_HTML_PAGE));
         }
 
         return list;
@@ -146,7 +147,7 @@ public class MappersTestsHelper {
             try {
                 WebScraperRequest request = new WebScraperRequest(i,
                         URI.create("https://www.test.com/" + i).toURL(),
-                        new HttpCookie[]{getHttpCookie()}, "user-agent." + i);
+                        new HttpCookie[]{getHttpCookie()}, "user-agent." + i, null);
                 list.add(new WebScraperResponse(request, "content", HttpStatus.OK,
                         SiteScrapStatus.SUCCESS));
             } catch (MalformedURLException ignored) {

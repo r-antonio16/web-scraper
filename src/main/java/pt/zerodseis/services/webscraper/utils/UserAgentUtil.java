@@ -36,12 +36,16 @@ public class UserAgentUtil {
     protected static List<UserAgent> readUAJson(String deviceType) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            InputStream inputStream = UserAgentUtil.class.getResourceAsStream(String.format("/user-agents/%s-common-ua.json", deviceType));
-            return objectMapper.readValue(inputStream, new TypeReference<>() {});
+            InputStream inputStream = UserAgentUtil.class.getResourceAsStream(String.format("/user-agents/%s-common" +
+                    "-ua.json", deviceType));
+            return objectMapper.readValue(inputStream, new TypeReference<>() {
+            });
         } catch (Exception e) {
             throw new ReadUserAgentJsonException(
                     String.format("Could not load %s user agents from json file", deviceType), e);
         }
     }
-    protected record UserAgent(double pct, String ua) {}
+
+    protected record UserAgent(double pct, String ua) {
+    }
 }

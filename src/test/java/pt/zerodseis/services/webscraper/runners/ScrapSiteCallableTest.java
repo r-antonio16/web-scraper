@@ -33,7 +33,7 @@ public class ScrapSiteCallableTest {
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
         URL url = mock(URL.class);
-        WebScraperRequest request = new WebScraperRequest(1, url, null, null);
+        WebScraperRequest request = new WebScraperRequest(1, url, null, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         when(manager.electProvider()).thenReturn(Optional.empty());
@@ -54,7 +54,7 @@ public class ScrapSiteCallableTest {
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
         URL url = mock(URL.class);
-        WebScraperRequest request = new WebScraperRequest(1, url, null, null);
+        WebScraperRequest request = new WebScraperRequest(1, url, null, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         when(manager.electProvider()).thenReturn(Optional.of(defaultConnectionProvider));
@@ -77,7 +77,7 @@ public class ScrapSiteCallableTest {
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
         URL url = mock(URL.class);
-        WebScraperRequest request = new WebScraperRequest(1, url, null, null);
+        WebScraperRequest request = new WebScraperRequest(1, url, null, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         ArgumentCaptor<String> uaCaptor = ArgumentCaptor.forClass(String.class);
@@ -87,7 +87,7 @@ public class ScrapSiteCallableTest {
                 Optional.empty());
         callable.call();
 
-        verify(defaultConnectionProvider, times(1)).openConnection(any(), uaCaptor.capture(),
+        verify(defaultConnectionProvider, times(1)).openConnection(any(), any(), uaCaptor.capture(),
                 any());
         assertNotNull(uaCaptor.getValue());
     }
@@ -98,13 +98,13 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
         Optional<HTTPConnection> connection = RunnersTestsHelper.getNotFoundHTTPConnectionMock();
 
         when(manager.electProvider()).thenReturn(Optional.of(defaultConnectionProvider));
         when(defaultConnectionProvider.score()).thenReturn(1);
-        when(defaultConnectionProvider.openConnection(any(), any(), any())).thenReturn(
+        when(defaultConnectionProvider.openConnection(any(), any(), any(), any())).thenReturn(
                 connection);
 
         WebScraperResponse response = callable.call();
@@ -123,13 +123,13 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
         Optional<HTTPConnection> connection = RunnersTestsHelper.getSuccessHTTPConnectionMock();
 
         when(manager.electProvider()).thenReturn(Optional.of(defaultConnectionProvider));
         when(defaultConnectionProvider.score()).thenReturn(1);
-        when(defaultConnectionProvider.openConnection(any(), any(), any())).thenReturn(
+        when(defaultConnectionProvider.openConnection(any(), any(), any(), any())).thenReturn(
                 connection);
 
         WebScraperResponse response = callable.call();
@@ -148,13 +148,13 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
         Optional<HTTPConnection> connection = RunnersTestsHelper.getSuccessHTTPConnectionAndBrokenInputStreamMock();
 
         when(manager.electProvider()).thenReturn(Optional.of(defaultConnectionProvider));
         when(defaultConnectionProvider.score()).thenReturn(1);
-        when(defaultConnectionProvider.openConnection(any(), any(), any())).thenReturn(
+        when(defaultConnectionProvider.openConnection(any(), any(), any(), any())).thenReturn(
                 connection);
 
         assertThrows(SiteConnectionException.class, callable::call);
@@ -167,12 +167,12 @@ public class ScrapSiteCallableTest {
         DefaultConnectionProvider defaultConnectionProvider = mock(DefaultConnectionProvider.class);
         WebScraperConnectionProviderManager manager = mock(
                 WebScraperConnectionProviderManager.class);
-        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null);
+        WebScraperRequest request = new WebScraperRequest(1, mock(URL.class), null, null, null);
         ScrapSiteCallable callable = new ScrapSiteCallable(manager, request);
 
         when(manager.electProvider()).thenReturn(Optional.of(defaultConnectionProvider));
         when(defaultConnectionProvider.score()).thenReturn(1);
-        when(defaultConnectionProvider.openConnection(any(), any(), any())).thenThrow(
+        when(defaultConnectionProvider.openConnection(any(), any(), any(), any())).thenThrow(
                 IOException.class);
 
         assertThrows(SiteConnectionException.class, callable::call);

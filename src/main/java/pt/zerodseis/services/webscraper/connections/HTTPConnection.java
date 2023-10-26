@@ -1,11 +1,12 @@
 package pt.zerodseis.services.webscraper.connections;
 
+import pt.zerodseis.services.webscraper.connections.wrappers.URLConnectionWrapper;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.UUID;
 
-public record HTTPConnection(UUID uuid, HttpURLConnection connection) {
+public record HTTPConnection(UUID uuid, URLConnectionWrapper connection) {
 
 
     public int getResponseCode() throws IOException {

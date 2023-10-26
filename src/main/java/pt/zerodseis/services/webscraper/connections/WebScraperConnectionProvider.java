@@ -14,7 +14,7 @@ public interface WebScraperConnectionProvider {
 
     boolean isActiveConnectionsLimitReached();
 
-    Optional<HTTPConnection> openConnection(URL url, String userAgent,
+    Optional<HTTPConnection> openConnection(URL url, HTTPConnectionContentType contentType, String userAgent,
             HttpCookie... cookies) throws IOException;
 
     Optional<HTTPConnection> openConnection(URL url) throws IOException;

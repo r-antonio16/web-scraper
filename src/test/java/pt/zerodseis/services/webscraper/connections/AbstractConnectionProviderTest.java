@@ -3,7 +3,6 @@ package pt.zerodseis.services.webscraper.connections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -390,7 +389,7 @@ public class AbstractConnectionProviderTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"TorConnectionProvider", "DefaultConnectionProvider"})
-    public void Should_HTTPConnectionProps_When_UAAndCookiesArePassed(String clazz)
+    public void Should_HaveHTTPConnectionProps_When_UAAndCookiesArePassed(String clazz)
             throws IOException {
         InetAddress ip = InetAddress.getByName("100.0.0.1");
         URL siteUrl = mock(URL.class);
@@ -419,7 +418,7 @@ public class AbstractConnectionProviderTest {
             assertEquals(ip, provider.getIp());
             assertEquals(10, provider.getFreeConnections());
 
-            Optional<HTTPConnection> optionalHTTPConnection = provider.openConnection(siteUrl,
+            Optional<HTTPConnection> optionalHTTPConnection = provider.openConnection(siteUrl, null,
                     userAgent, cookie1, cookie2);
 
             assertTrue(optionalHTTPConnection.isPresent());

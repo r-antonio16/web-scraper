@@ -71,7 +71,7 @@ public class IpAddressUtil {
         String envValue = System.getenv("WEBSITE_TO_GET_EXTERNAL_IP");
 
         if (envValue == null) {
-            return "https://api4.my-ip.io/ip";
+            return "https://api.ipify.org/";
         }
 
         return envValue;

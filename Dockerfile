@@ -1,11 +1,21 @@
 FROM alpine:latest
 
+ENV OPENJDK_VERSION 21
+
 RUN apk update &&  \
     apk add tor && \
-    apk add openjdk20-jdk --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ && \
-    apk add openrc --no-cache && \
+    apk add openjdk${OPENJDK_VERSION}-jdk --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ && \
     apk add curl && \
-    apk cache clean
+    apk add firefox && \
+    apk add libexif && \
+    apk add xvfb && \
+    apk add dbus && \
+    apk add py-pip && \
+    apk add ttf-dejavu && \
+    apk add openrc --no-cache && \
+    apk cache clean && \
+    pip install --upgrade pip && \
+    pip install selenium
 
 RUN addgroup -S scraper &&  \
     adduser -S scraper -G scraper && \

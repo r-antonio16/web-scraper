@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
@@ -59,9 +58,9 @@ public class DefaultWebScraperRunnerTest {
         runner.destroy();
         assertNotNull(runner);
         assertThrows(RejectedExecutionException.class,
-                () -> runner.scrapSite(new WebScraperRequest(null, null, null, null)));
+                () -> runner.scrapSite(new WebScraperRequest(null, null, null, null, null)));
         assertThrows(RejectedExecutionException.class,
-                () -> runner.scrapSites(List.of(new WebScraperRequest(null, null, null, null))));
+                () -> runner.scrapSites(List.of(new WebScraperRequest(null, null, null, null, null))));
     }
 
     @Test
@@ -71,7 +70,7 @@ public class DefaultWebScraperRunnerTest {
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
                 List.of(defaultProviderMock));
         when(defaultProviderMock.score()).thenReturn(10);
-        when(defaultProviderMock.openConnection(any(), any(), any())).thenAnswer(i -> {
+        when(defaultProviderMock.openConnection(any(), any(), any(), any())).thenAnswer(i -> {
             Thread.sleep(5000);
             return Optional.empty();
         });
@@ -94,7 +93,7 @@ public class DefaultWebScraperRunnerTest {
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
                 List.of(defaultProviderMock));
         when(defaultProviderMock.score()).thenReturn(10);
-        when(defaultProviderMock.openConnection(any(), any(), any())).thenThrow(IOException.class);
+        when(defaultProviderMock.openConnection(any(), any(), any(), any())).thenThrow(IOException.class);
 
         DefaultWebScraperRunner runner = new DefaultWebScraperRunner(providerManager, 1,
                 TimeUnit.SECONDS);
@@ -120,9 +119,9 @@ public class DefaultWebScraperRunnerTest {
         when(winnerProviderMock.score()).thenReturn(10);
         when(loserProviderMock.score()).thenReturn(5);
         when(loserProviderMock.score()).thenReturn(1);
-        when(winnerProviderMock.openConnection(any(), any(), any())).thenReturn(connectionOptMock);
-        when(loserProviderMock.openConnection(any(), any(), any())).thenReturn(Optional.empty());
-        when(defaultProviderMock.openConnection(any(), any(), any())).thenReturn(Optional.empty());
+        when(winnerProviderMock.openConnection(any(), any(), any(), any())).thenReturn(connectionOptMock);
+        when(loserProviderMock.openConnection(any(), any(), any(), any())).thenReturn(Optional.empty());
+        when(defaultProviderMock.openConnection(any(), any(), any(), any())).thenReturn(Optional.empty());
 
         DefaultWebScraperRunner runner = new DefaultWebScraperRunner(providerManager, 1,
                 TimeUnit.SECONDS);
@@ -130,7 +129,7 @@ public class DefaultWebScraperRunnerTest {
         WebScraperResponse response = runner.scrapSite(request);
 
         assertNotNull(response);
-        verify(winnerProviderMock, times(1)).openConnection(any(), any(), any());
+        verify(winnerProviderMock, times(1)).openConnection(any(), any(), any(), any());
         assertEquals("html content", response.content());
         assertEquals(request, response.request());
         assertEquals(HttpStatus.OK, response.statusCode());
@@ -145,7 +144,7 @@ public class DefaultWebScraperRunnerTest {
                 List.of(defaultProviderMock));
         Optional<HTTPConnection> connectionOptMock = RunnersTestsHelper.getSuccessHTTPConnectionMock();
         when(defaultProviderMock.score()).thenReturn(10);
-        when(defaultProviderMock.openConnection(any(), any(), any())).thenReturn(connectionOptMock);
+        when(defaultProviderMock.openConnection(any(), any(), any(), any())).thenReturn(connectionOptMock);
 
         DefaultWebScraperRunner runner = new DefaultWebScraperRunner(providerManager, 1,
                 TimeUnit.SECONDS);
@@ -165,7 +164,7 @@ public class DefaultWebScraperRunnerTest {
         WebScraperConnectionProviderManager providerManager = new WebScraperConnectionProviderManager(
                 List.of(defaultProviderMock));
         when(defaultProviderMock.score()).thenReturn(10);
-        when(defaultProviderMock.openConnection(any(), any(), any())).thenAnswer(i -> {
+        when(defaultProviderMock.openConnection(any(), any(), any(), any())).thenAnswer(i -> {
             Thread.sleep(3000);
             return Optional.empty();
         });
@@ -197,7 +196,7 @@ public class DefaultWebScraperRunnerTest {
         Optional<HTTPConnection> connectionOptMock = RunnersTestsHelper.getSuccessHTTPConnectionMock();
         when(defaultProviderMock.score()).thenReturn(10);
 
-        when(defaultProviderMock.openConnection(any(), any(), any())).thenAnswer(i -> {
+        when(defaultProviderMock.openConnection(any(), any(), any(), any())).thenAnswer(i -> {
             if (openConnectionCalls.incrementAndGet() % 2 == 0) {
                 return connectionOptMock;
             } else {
@@ -237,13 +236,13 @@ public class DefaultWebScraperRunnerTest {
 
         List<WebScraperRequest> requests1 = RunnersTestsHelper.generateWebScraperRequests(
                 requestsToGen, connectionWaitMillis,
-                () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
+                () -> RunnersTestsHelper.getSuccessHTTPUrlConnectionMock());
         List<WebScraperRequest> requests2 = RunnersTestsHelper.generateWebScraperRequests(
                 requestsToGen, connectionWaitMillis,
-                () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
+                () -> RunnersTestsHelper.getSuccessHTTPUrlConnectionMock());
         List<WebScraperRequest> requests3 = RunnersTestsHelper.generateWebScraperRequests(
                 requestsToGen, connectionWaitMillis,
-                () -> RunnersTestsHelper.getSuccessHTTPConnectionMock().get().connection());
+                () -> RunnersTestsHelper.getSuccessHTTPUrlConnectionMock());
 
         DefaultWebScraperRunner runner = new DefaultWebScraperRunner(providerManager, 1,
                 TimeUnit.SECONDS);

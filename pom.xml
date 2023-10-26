@@ -19,11 +19,12 @@
     <java.version>20</java.version>
     <company.name>zerodseis</company.name>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
-    <docker-maven-plugin.version>0.43.0</docker-maven-plugin.version>
+    <docker-maven-plugin.version>0.43.2</docker-maven-plugin.version>
     <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
     <springdoc-openapi-starter-webmvc-ui.version>2.1.0</springdoc-openapi-starter-webmvc-ui.version>
     <springdoc-openapi-starter-webmvc-ui.version>2.1.0</springdoc-openapi-starter-webmvc-ui.version>
     <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
+    <selenium.version>4.11.0</selenium.version>
   </properties>
 
   <dependencies>
@@ -55,8 +56,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
     </dependency>
 
     <dependency>
@@ -70,12 +72,6 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.jetbrains</groupId>
-          <artifactId>annotations</artifactId>
-          <version>RELEASE</version>
-          <scope>compile</scope>
-      </dependency>
 
   </dependencies>
 

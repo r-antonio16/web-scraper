@@ -18,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import pt.zerodseis.services.webscraper.connections.manager.WebScraperConnectionProviderManager;
 import pt.zerodseis.services.webscraper.connections.WebScraperRequest;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
+import pt.zerodseis.services.webscraper.exceptions.SiteConnectionInitException;
 
 @Log4j2
 @Component
@@ -82,8 +83,12 @@ public class DefaultWebScraperRunner implements WebScraperRunner {
             log.error("The task to get response for request {} was interrupted", request);
             return new WebScraperResponse(request, null, null, SiteScrapStatus.INTERRUPTED);
         } catch (ExecutionException e) {
-            log.error("The task to get response for request {} could not complete with success",
-                    request);
+            if (e.getCause() instanceof SiteConnectionInitException) {
+                log.error("The SiteConnectionWrapper could not be initialized", e.getCause().getCause());
+            } else {
+                log.error("The task to get response for request {} could not complete with success",
+                        request);
+            }
         }
 
         return new WebScraperResponse(request, null, null, SiteScrapStatus.FAIL);

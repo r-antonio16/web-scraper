@@ -52,7 +52,7 @@ The microservice provides several configuration options that can be customized a
 - `runner.wait.for.scraper.response.timeout`: Defines the amount of time to wait for a scraped site response.
 - `runner.wait.for.scraper.response.unit`: Defines the units of time for the `runner.wait.for.scraper.response.timeout` property.
 
-You can also customize the default site to probe the external IP by setting the WEBSITE_TO_GET_EXTERNAL_IP environment variable with the desired URL. By default, it uses the URL https://api4.my-ip.io/ip.
+You can also customize the default site to probe the external IP by setting the WEBSITE_TO_GET_EXTERNAL_IP environment variable with the desired URL. By default, it uses the URL https://api.ipify.org/.
 
 
 ## Getting Started

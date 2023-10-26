@@ -26,6 +26,7 @@ import pt.zerodseis.services.webscraper.connections.DefaultConnectionProvider;
 import pt.zerodseis.services.webscraper.connections.HTTPConnection;
 import pt.zerodseis.services.webscraper.connections.TorConnectionProvider;
 import pt.zerodseis.services.webscraper.connections.WebScraperRequest;
+import pt.zerodseis.services.webscraper.connections.wrappers.URLConnectionWrapper;
 import pt.zerodseis.services.webscraper.utils.IpAddressUtil;
 import pt.zerodseis.services.webscraper.utils.UserAgentUtil;
 
@@ -55,7 +56,7 @@ public class RunnersTestsHelper {
                 }
             }
             requests.add(new WebScraperRequest(i, siteMock, new HttpCookie[]{sessionId},
-                    UserAgentUtil.getRandomUserAgent()));
+                    UserAgentUtil.getRandomUserAgent(), null));
         }
 
         return requests;
@@ -98,11 +99,23 @@ public class RunnersTestsHelper {
 
     static Optional<HTTPConnection> getNotFoundHTTPConnectionMock() {
         try {
-            HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-            when(httpURLConnectionMock.getResponseCode()).thenReturn(404);
+            URLConnectionWrapper urlConnectionWrapper = mock(URLConnectionWrapper.class);
+            when(urlConnectionWrapper.getResponseCode()).thenReturn(404);
             HTTPConnection connection = new HTTPConnection(UUID.randomUUID(),
-                    httpURLConnectionMock);
+                    urlConnectionWrapper);
             return Optional.of(connection);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static HttpURLConnection getSuccessHTTPUrlConnectionMock() {
+        try {
+            HttpURLConnection urlConnection = mock(HttpURLConnection.class);
+            when(urlConnection.getResponseCode()).thenReturn(200);
+            InputStream inputStream = new ByteArrayInputStream("html content".getBytes());
+            when(urlConnection.getInputStream()).thenReturn(inputStream);
+            return urlConnection;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,12 +123,12 @@ public class RunnersTestsHelper {
 
     static Optional<HTTPConnection> getSuccessHTTPConnectionMock() {
         try {
-            HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-            when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
+            URLConnectionWrapper urlConnectionWrapper = mock(URLConnectionWrapper.class);
+            when(urlConnectionWrapper.getResponseCode()).thenReturn(200);
             InputStream inputStream = new ByteArrayInputStream("html content".getBytes());
-            when(httpURLConnectionMock.getInputStream()).thenReturn(inputStream);
+            when(urlConnectionWrapper.getInputStream()).thenReturn(inputStream);
             HTTPConnection connection = new HTTPConnection(UUID.randomUUID(),
-                    httpURLConnectionMock);
+                    urlConnectionWrapper);
             return Optional.of(connection);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -124,13 +137,13 @@ public class RunnersTestsHelper {
 
     static Optional<HTTPConnection> getSuccessHTTPConnectionAndBrokenInputStreamMock() {
         try {
-            HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-            when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
+            URLConnectionWrapper urlConnectionWrapper = mock(URLConnectionWrapper.class);
+            when(urlConnectionWrapper.getResponseCode()).thenReturn(200);
             InputStream inputStream = mock(InputStream.class);
             when(inputStream.read()).thenThrow(IOException.class);
-            when(httpURLConnectionMock.getInputStream()).thenReturn(inputStream);
+            when(urlConnectionWrapper.getInputStream()).thenReturn(inputStream);
             HTTPConnection connection = new HTTPConnection(UUID.randomUUID(),
-                    httpURLConnectionMock);
+                    urlConnectionWrapper);
             return Optional.of(connection);
         } catch (IOException e) {
             throw new RuntimeException(e);

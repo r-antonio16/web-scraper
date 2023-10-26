@@ -1,21 +1,27 @@
 package pt.zerodseis.services.webscraper.connections;
 
 import jakarta.annotation.PreDestroy;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.util.StringUtils;
+import pt.zerodseis.services.webscraper.connections.wrappers.URLConnectionWrapper;
+import pt.zerodseis.services.webscraper.utils.IpAddressUtil;
+
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.util.StringUtils;
-import pt.zerodseis.services.webscraper.utils.IpAddressUtil;
 
 @Log4j2
 abstract class AbstractConnectionProvider implements WebScraperConnectionProvider {
@@ -23,7 +29,7 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
     private static final int PERCENTAGE_FACTOR = 100;
     private static final int DEFAULT_SCORE = 0;
 
-    protected final Map<UUID, HttpURLConnection> activeConnections;
+    protected final Map<UUID, URLConnectionWrapper> activeConnections;
     protected final AtomicInteger freeConnections;
     protected final AtomicInteger totalConnections;
     protected final AtomicInteger failedConnections;
@@ -66,7 +72,7 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
     }
 
     @Override
-    public Optional<HTTPConnection> openConnection(URL url, String userAgent, HttpCookie... cookies)
+    public Optional<HTTPConnection> openConnection(URL url, HTTPConnectionContentType contentType, String userAgent, HttpCookie... cookies)
             throws IOException {
         if (!WebScraperConnectionProviderStatus.UP.equals(status.get())
                 || isActiveConnectionsLimitReached()) {
@@ -80,9 +86,13 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
         boolean failedConnectionAlreadyIncremented = false;
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
-
-            setConnectionProperties(connection, userAgent, cookies);
+            URLConnectionWrapper connection = URLConnectionWrapper
+                    .builder()
+                    .url(url)
+                    .proxy(proxy)
+                    .requestProperties(buildConnectionProperties(userAgent, cookies))
+                    .contentType(contentType)
+                    .build();
 
             connection.connect();
 
@@ -106,14 +116,14 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
 
     @Override
     public Optional<HTTPConnection> openConnection(URL url) throws IOException {
-        return openConnection(url, null);
+        return openConnection(url, null, null);
     }
 
     @Override
     public void closeConnection(HTTPConnection connection) {
         if (activeConnections.containsKey(connection.uuid())) {
             freeConnections.incrementAndGet();
-            HttpURLConnection httpURLConnection = activeConnections.remove(connection.uuid());
+            URLConnectionWrapper httpURLConnection = activeConnections.remove(connection.uuid());
             httpURLConnection.disconnect();
         }
     }
@@ -174,19 +184,18 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
         return (int) (freeConnections.get() * successConnectionsRate * PERCENTAGE_FACTOR);
     }
 
-    private void setConnectionProperties(HttpURLConnection connection, String userAgent,
-            HttpCookie... cookies) {
+    private Map<String, List<Object>> buildConnectionProperties(String userAgent,
+                                                                HttpCookie... cookies) {
+        Map<String, List<Object>> properties = new HashMap<>();
+
         if (StringUtils.hasText(userAgent)) {
-            connection.setRequestProperty("User-Agent", userAgent);
+            properties.put("User-Agent", List.of(userAgent));
         }
 
         if (cookies != null && cookies.length > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (HttpCookie cookie : cookies) {
-                sb.append(String.format("%s=%s; ", cookie.getName(), cookie.getValue()));
-            }
-
-            connection.setRequestProperty("Cookie", sb.toString());
+            properties.put("Cookie", new ArrayList<>(Arrays.asList(cookies)));
         }
+
+        return properties;
     }
 }

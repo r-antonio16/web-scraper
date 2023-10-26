@@ -40,7 +40,7 @@ class ScrapSiteCallable implements Callable<WebScraperResponse> {
             String userAgent = StringUtils.hasText(request.userAgent()) ? request.userAgent()
                     : UserAgentUtil.getRandomUserAgent();
 
-            connectionOpt = provider.openConnection(request.url(), userAgent, request.cookies());
+            connectionOpt = provider.openConnection(request.url(), request.contentType(), userAgent, request.cookies());
 
             if (connectionOpt.isPresent()) {
                 int responseCode = connectionOpt.get().getResponseCode();

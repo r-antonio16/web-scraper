@@ -4,6 +4,6 @@ import java.net.HttpCookie;
 import java.net.URL;
 
 
-public record WebScraperRequest(Integer id, URL url, HttpCookie[] cookies, String userAgent) {
+public record WebScraperRequest(Integer id, URL url, HttpCookie[] cookies, String userAgent, HTTPConnectionContentType contentType) {
 
 }
