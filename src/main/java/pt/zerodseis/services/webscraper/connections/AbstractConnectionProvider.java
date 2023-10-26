@@ -189,11 +189,11 @@ abstract class AbstractConnectionProvider implements WebScraperConnectionProvide
         Map<String, List<Object>> properties = new HashMap<>();
 
         if (StringUtils.hasText(userAgent)) {
-            properties.put("User-Agent", List.of(userAgent));
+            properties.put(RequestPropertiesConstants.USER_AGENT_PROP, List.of(userAgent));
         }
 
         if (cookies != null && cookies.length > 0) {
-            properties.put("Cookie", new ArrayList<>(Arrays.asList(cookies)));
+            properties.put(RequestPropertiesConstants.COOKIE_PROP, new ArrayList<>(Arrays.asList(cookies)));
         }
 
         return properties;

@@ -1,5 +1,6 @@
 package pt.zerodseis.services.webscraper.connections.wrappers;
 
+import pt.zerodseis.services.webscraper.connections.RequestPropertiesConstants;
 import pt.zerodseis.services.webscraper.exceptions.SiteConnectionInitException;
 
 import java.io.IOException;
@@ -22,9 +23,9 @@ public class DefaultURLConnectionWrapper implements URLConnectionWrapper {
 
             for (Map.Entry<String, List<Object>> requestProperty : requestProperties.entrySet()) {
                 for (Object requestPropertyValue : requestProperty.getValue()) {
-                    if (requestProperty.getKey().equals("Cookie")) {
+                    if (requestProperty.getKey().equals(RequestPropertiesConstants.COOKIE_PROP)) {
                         if (!cookiesAdded) {
-                            List<Object> cookies = requestProperties.get("Cookie");
+                            List<Object> cookies = requestProperties.get(RequestPropertiesConstants.COOKIE_PROP);
                             StringBuilder sb = new StringBuilder();
 
                             for (Object cookieObj : cookies) {

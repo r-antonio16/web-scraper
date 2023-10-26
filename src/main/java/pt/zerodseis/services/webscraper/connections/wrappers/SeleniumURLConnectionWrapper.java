@@ -7,6 +7,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.springframework.util.CollectionUtils;
+import pt.zerodseis.services.webscraper.connections.RequestPropertiesConstants;
 import pt.zerodseis.services.webscraper.exceptions.SiteConnectionInitException;
 
 import java.io.ByteArrayInputStream;
@@ -45,8 +46,8 @@ public class SeleniumURLConnectionWrapper implements URLConnectionWrapper {
     }
 
     private void buildCookies(Map<String, List<Object>> requestProperties) {
-        if (requestProperties.containsKey("Cookie")) {
-            List<Object> cookies = requestProperties.get("Cookie");
+        if (requestProperties.containsKey(RequestPropertiesConstants.COOKIE_PROP)) {
+            List<Object> cookies = requestProperties.get(RequestPropertiesConstants.COOKIE_PROP);
             for (Object cookieObj : cookies) {
                 HttpCookie httpCookie = (HttpCookie) cookieObj;
 
