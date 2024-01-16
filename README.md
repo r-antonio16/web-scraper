@@ -1,6 +1,6 @@
 # Web Scraper Microservice Project
 
-This repository contains a Web Scraper microservice project that enables scraping ads from various auto websites.
+This repository contains a Web Scraper microservice to be used for scraping websites.
 
 ## Table of Contents
 
@@ -14,15 +14,15 @@ This repository contains a Web Scraper microservice project that enables scrapin
 
 ## Introduction
 
-This project is a Spring Boot-based microservice that provides a scalable and efficient solution for scraping ads from popular auto websites. It leverages multithreading techniques to enhance performance and employs IP rotation using different proxies/networks to prevent blocking from target websites.
+This project maintains a Spring Boot-based microservice built for scraping websites, it supports to scrap a website loading its webpage as a static page or a dynamic page (mimicking a browser with JS support) and also to scrap an API service that returns a JSON response.
+It takes advantage of multithreading to scrap a set of webpages simultaneously and employs IP rotation using different proxies/networks to prevent blocking from target websites.
 
 ## Features
 
-- **RESTful API**: Exposes a RESTful API with services for requesting scraping of single or multiple target websites.
-- **Web Scraper Runner and Default Web Scraper Runner**: Provides an interface to implement a task executor responsible for scraping content from the requested target websites. The Default Web Scraper Runner utilizes a thread pool (WorkStealingPool) to enable efficient scraping.
-- **IP Rotation**: Switches between the Tor network and the host's own public IP address to rotate IP addresses, preventing blocking by target websites.
-- **Web Scrapper Template**: Provides an interface to extend and customize the steps for scraping desired content from the HTML pages of target sites.
-- **Exception Handling**: Provides robust exception handling for better error management and graceful degradation.
+- **RESTful API**: Exposes a RESTful API with services for scrap single or multiple target websites.
+- **Web Scraper Runner and Default Web Scraper Runner**: Provides an interface to implement a task executor responsible for scraping content from the requested target websites. The Default Web Scraper Runner uses the WorkStealingPool implementation as the thread pool.
+- **IP Rotation**: Switches between the Tor network and the host's own public IP address to rotate IP addresses.
+- **Exception Handling**: Provides robust exception handling for better error management.
 - **Logging**: Integrates log4j for effective debugging, monitoring, and log management.
 - **Configuration Management**: Supports external configuration files to easily manage application settings.
 - **Testing**: Includes comprehensive unit tests and integration tests using JUnit and Mockito for ensuring code quality.
