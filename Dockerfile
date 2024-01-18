@@ -1,10 +1,10 @@
-FROM alpine:latest
+FROM alpine:3.18
 
 ENV OPENJDK_VERSION 21
 
 RUN apk update &&  \
     apk add tor && \
-    apk add openjdk${OPENJDK_VERSION}-jdk --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/ && \
+    apk add openjdk${OPENJDK_VERSION}-jdk --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/ && \
     apk add curl && \
     apk add firefox && \
     apk add libexif && \
@@ -12,7 +12,7 @@ RUN apk update &&  \
     apk add dbus && \
     apk add py-pip && \
     apk add ttf-dejavu && \
-    apk add openrc --no-cache && \
+    apk add openrc && \
     apk cache clean && \
     pip install --upgrade pip && \
     pip install selenium
