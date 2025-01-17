@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.mappers;
+package pt.zerodseis.services.webscraper.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
-import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperResponseDto;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration

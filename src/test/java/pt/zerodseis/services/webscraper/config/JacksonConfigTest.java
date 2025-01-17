@@ -16,10 +16,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import pt.zerodseis.services.webscraper.connections.DefaultConnectionProvider;
 import pt.zerodseis.services.webscraper.connections.TorConnectionProvider;
-import pt.zerodseis.services.webscraper.mappers.MappersTestsHelper;
+import pt.zerodseis.services.webscraper.mapper.MappersTestsHelper;
 import pt.zerodseis.services.webscraper.service.WebScraperService;
-import pt.zerodseis.services.webscraper.web.models.WebScraperRequestDto;
-import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperRequestDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperResponseDto;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

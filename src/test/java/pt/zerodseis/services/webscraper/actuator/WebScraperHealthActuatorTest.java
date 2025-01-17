@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.actuators;
+package pt.zerodseis.services.webscraper.actuator;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

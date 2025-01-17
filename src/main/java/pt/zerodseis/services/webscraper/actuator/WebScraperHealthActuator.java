@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.actuators;
+package pt.zerodseis.services.webscraper.actuator;
 
 import java.util.List;
 import org.springframework.boot.actuate.health.Health;

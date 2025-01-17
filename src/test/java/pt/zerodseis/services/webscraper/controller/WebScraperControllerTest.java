@@ -23,11 +23,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import pt.zerodseis.services.webscraper.exceptions.ConnectionProviderRuntimeException;
 import pt.zerodseis.services.webscraper.exceptions.ReadUserAgentJsonException;
-import pt.zerodseis.services.webscraper.mappers.MappersTestsHelper;
+import pt.zerodseis.services.webscraper.mapper.MappersTestsHelper;
 import pt.zerodseis.services.webscraper.service.WebScraperService;
-import pt.zerodseis.services.webscraper.web.controller.WebScraperController;
-import pt.zerodseis.services.webscraper.web.models.WebScraperRequestDto;
-import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperRequestDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperResponseDto;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = WebScraperController.class)

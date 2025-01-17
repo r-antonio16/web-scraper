@@ -1,8 +1,8 @@
-package pt.zerodseis.services.webscraper.mappers;
+package pt.zerodseis.services.webscraper.mapper;
 
 import java.net.HttpCookie;
 import org.mapstruct.Mapper;
-import pt.zerodseis.services.webscraper.web.models.HttpCookieDto;
+import pt.zerodseis.services.webscraper.dto.HttpCookieDto;
 
 @Mapper
 public interface HttpCookieDtoMapper {

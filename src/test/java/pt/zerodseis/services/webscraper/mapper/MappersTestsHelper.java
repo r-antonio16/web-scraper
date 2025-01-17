@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.mappers;
+package pt.zerodseis.services.webscraper.mapper;
 
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
@@ -13,9 +13,9 @@ import pt.zerodseis.services.webscraper.connections.HTTPConnectionContentType;
 import pt.zerodseis.services.webscraper.connections.WebScraperRequest;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
 import pt.zerodseis.services.webscraper.runners.SiteScrapStatus;
-import pt.zerodseis.services.webscraper.web.models.HttpCookieDto;
-import pt.zerodseis.services.webscraper.web.models.WebScraperRequestDto;
-import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
+import pt.zerodseis.services.webscraper.dto.HttpCookieDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperRequestDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperResponseDto;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MappersTestsHelper {

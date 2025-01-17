@@ -23,14 +23,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pt.zerodseis.services.webscraper.connections.WebScraperResponse;
-import pt.zerodseis.services.webscraper.mappers.HttpCookieDtoMapper;
-import pt.zerodseis.services.webscraper.mappers.HttpStatusMapper;
-import pt.zerodseis.services.webscraper.mappers.MappersTestsHelper;
-import pt.zerodseis.services.webscraper.mappers.WebScraperRequestDtoMapper;
-import pt.zerodseis.services.webscraper.mappers.WebScraperResponseDtoMapper;
+import pt.zerodseis.services.webscraper.mapper.HttpCookieDtoMapper;
+import pt.zerodseis.services.webscraper.mapper.HttpStatusMapper;
+import pt.zerodseis.services.webscraper.mapper.MappersTestsHelper;
+import pt.zerodseis.services.webscraper.mapper.WebScraperRequestDtoMapper;
+import pt.zerodseis.services.webscraper.mapper.WebScraperResponseDtoMapper;
 import pt.zerodseis.services.webscraper.runners.WebScraperRunner;
-import pt.zerodseis.services.webscraper.web.models.WebScraperRequestDto;
-import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperRequestDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperResponseDto;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration

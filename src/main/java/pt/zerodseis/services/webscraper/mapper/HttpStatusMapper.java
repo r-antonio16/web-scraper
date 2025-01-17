@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.mappers;
+package pt.zerodseis.services.webscraper.mapper;
 
 import org.mapstruct.Mapper;
 import org.springframework.http.HttpStatus;

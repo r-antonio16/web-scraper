@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.web.controller;
+package pt.zerodseis.services.webscraper.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pt.zerodseis.services.webscraper.service.WebScraperService;
-import pt.zerodseis.services.webscraper.web.models.WebScraperRequestDto;
-import pt.zerodseis.services.webscraper.web.models.WebScraperResponseDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperRequestDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperResponseDto;
 
 @Validated
 @RequestMapping("/api/v1/scraper/")

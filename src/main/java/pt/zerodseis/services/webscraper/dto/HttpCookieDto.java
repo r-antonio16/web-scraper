@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.web.models;
+package pt.zerodseis.services.webscraper.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

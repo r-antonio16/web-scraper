@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import pt.zerodseis.services.webscraper.exceptions.ConnectionProviderRuntimeException;
 import pt.zerodseis.services.webscraper.exceptions.ReadUserAgentJsonException;
-import pt.zerodseis.services.webscraper.web.models.ApiError;
+import pt.zerodseis.services.webscraper.dto.ApiError;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

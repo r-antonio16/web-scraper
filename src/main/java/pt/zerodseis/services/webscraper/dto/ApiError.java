@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.web.models;
+package pt.zerodseis.services.webscraper.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;

@@ -1,8 +1,8 @@
-package pt.zerodseis.services.webscraper.mappers;
+package pt.zerodseis.services.webscraper.mapper;
 
 import org.mapstruct.Mapper;
 import pt.zerodseis.services.webscraper.connections.WebScraperRequest;
-import pt.zerodseis.services.webscraper.web.models.WebScraperRequestDto;
+import pt.zerodseis.services.webscraper.dto.WebScraperRequestDto;
 
 @Mapper(uses = HttpCookieDtoMapper.class)
 public interface WebScraperRequestDtoMapper {

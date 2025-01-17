@@ -1,4 +1,4 @@
-package pt.zerodseis.services.webscraper.mappers;
+package pt.zerodseis.services.webscraper.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pt.zerodseis.services.webscraper.web.models.HttpCookieDto;
+import pt.zerodseis.services.webscraper.dto.HttpCookieDto;
 
 @ExtendWith(SpringExtension.class)
 public class HttpCookieDtoMapperTest {
