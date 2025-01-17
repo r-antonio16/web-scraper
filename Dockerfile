@@ -1,8 +1,8 @@
-FROM alpine:3.18
+FROM alpine:3.21.2
 
 ENV OPENJDK_VERSION 21
 
-RUN apk update &&  \
+RUN apk update && \
     apk add tor && \
     apk add openjdk${OPENJDK_VERSION}-jdk --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/ && \
     apk add curl && \
@@ -10,12 +10,13 @@ RUN apk update &&  \
     apk add libexif && \
     apk add xvfb && \
     apk add dbus && \
-    apk add py-pip && \
+    apk add python3 && \
+    apk add py3-pip && \
     apk add ttf-dejavu && \
     apk add openrc && \
     apk cache clean && \
-    pip install --upgrade pip && \
-    pip install selenium
+    python3 -m venv ~/pyvenv --system-site-packages && \
+    ~/pyvenv/bin/pip3 install selenium
 
 RUN addgroup -S scraper &&  \
     adduser -S scraper -G scraper && \

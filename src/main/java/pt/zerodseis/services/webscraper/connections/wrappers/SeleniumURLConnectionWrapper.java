@@ -79,7 +79,7 @@ public class SeleniumURLConnectionWrapper implements URLConnectionWrapper {
     private org.openqa.selenium.Proxy proxyToSeleniumProxy(Proxy proxy) {
         org.openqa.selenium.Proxy seleniumProxy = new org.openqa.selenium.Proxy();
 
-        seleniumProxy.setProxyType(ProxyType.MANUAL);
+        seleniumProxy.setProxyType(ProxyType.AUTODETECT);
 
         InetSocketAddress address = (InetSocketAddress) proxy.address();
 
