@@ -1,7 +1,6 @@
 package pt.zerodseis.services.webscraper.connections.wrappers;
 
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -24,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static java.net.Proxy.Type.DIRECT;
+import static java.net.Proxy.Type.SOCKS;
 
 public class SeleniumURLConnectionWrapper implements URLConnectionWrapper {
 
@@ -76,27 +75,16 @@ public class SeleniumURLConnectionWrapper implements URLConnectionWrapper {
         return domain;
     }
 
-    private org.openqa.selenium.Proxy proxyToSeleniumProxy(Proxy proxy) {
-        org.openqa.selenium.Proxy seleniumProxy = new org.openqa.selenium.Proxy();
+    private void addProxyProps(Proxy proxy, FirefoxProfile profile) {
+        if (SOCKS.equals(proxy.type())) {
+            InetSocketAddress address = (InetSocketAddress) proxy.address();
 
-        seleniumProxy.setProxyType(ProxyType.AUTODETECT);
-
-        InetSocketAddress address = (InetSocketAddress) proxy.address();
-
-        if (DIRECT != proxy.type()) {
-            String proxyUrl = address.getHostName()
-                    + ":" + address.getPort();
-
-            switch (proxy.type()) {
-                case HTTP -> seleniumProxy.setHttpProxy(proxyUrl);
-                case SOCKS -> {
-                    seleniumProxy.setSocksProxy(proxyUrl);
-                    seleniumProxy.setSocksVersion(5);
-                }
-            }
+            profile.setPreference("network.proxy.type", 1);
+            profile.setPreference("network.proxy.socks", address.getHostName());
+            profile.setPreference("network.proxy.socks_port", address.getPort());
+            profile.setPreference("network.proxy.socks_version", 5);
+            profile.setPreference("network.proxy.socks_remote_dns", true);
         }
-
-        return seleniumProxy;
     }
 
     private WebDriver initWebDriver(Proxy proxy) {
@@ -109,13 +97,14 @@ public class SeleniumURLConnectionWrapper implements URLConnectionWrapper {
         profile.setPreference("network.http.pipelining", true);
         profile.setPreference("network.http.proxy.pipelining", true);
         profile.setPreference("network.http.pipelining.maxrequests", 10);
-
+        
+        addProxyProps(proxy, profile);
+        
         FirefoxOptions options = new FirefoxOptions();
-        options.setProxy(proxyToSeleniumProxy(proxy));
+        options.setProfile(profile);
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--disable-extensions");
-        options.setProfile(profile);
 
         return new FirefoxDriver(options);
     }
