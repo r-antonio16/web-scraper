@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,6 +24,8 @@ import pt.zerodseis.services.webscraper.dto.ApiError;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
@@ -35,6 +40,7 @@ public class GlobalExceptionHandler {
                 .errors(List.of(errorMsg))
                 .build();
 
+        LOG.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
@@ -55,6 +61,7 @@ public class GlobalExceptionHandler {
                 .errors(errors)
                 .build();
 
+        LOG.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
@@ -72,36 +79,40 @@ public class GlobalExceptionHandler {
                 .errors(errors)
                 .build();
 
+        LOG.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
     @ExceptionHandler(ConnectionProviderRuntimeException.class)
-    public ResponseEntity<ApiError> handleConnectionProviderRuntimeException() {
+    public ResponseEntity<ApiError> handleConnectionProviderRuntimeException(ConnectionProviderRuntimeException ex) {
         ApiError apiError = buildInternalServerError()
                 .message("Web Connection Provider Runtime Error")
                 .errors(Collections.emptyList())
                 .build();
 
+        LOG.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 
     @ExceptionHandler(ReadUserAgentJsonException.class)
-    public ResponseEntity<ApiError> handleUserAgentJsonException() {
+    public ResponseEntity<ApiError> handleUserAgentJsonException(ReadUserAgentJsonException ex) {
         ApiError apiError = buildInternalServerError()
                 .message("Default User Agents Load Error")
                 .errors(Collections.emptyList())
                 .build();
 
+        LOG.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleFallbackException() {
+    public ResponseEntity<ApiError> handleFallbackException(Exception ex) {
         ApiError apiError = buildInternalServerError()
                 .message("Unexpected Exception")
                 .errors(Collections.emptyList())
                 .build();
 
+        LOG.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 
