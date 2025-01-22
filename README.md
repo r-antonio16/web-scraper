@@ -1,6 +1,6 @@
 # Web Scraper Microservice Project
 
-This repository contains a Web Scraper microservice to be used for scraping websites.
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Table of Contents
 
@@ -17,15 +17,18 @@ This repository contains a Web Scraper microservice to be used for scraping webs
 This project maintains a Spring Boot-based microservice built for scraping websites, it supports to scrap a website loading its webpage as a static page or a dynamic page (mimicking a browser with JS support) and also to scrap an API service that returns a JSON response.
 It takes advantage of multithreading to scrap a set of webpages simultaneously and employs IP rotation using different proxies/networks to prevent blocking from target websites.
 
+It was initially created with the goal of providing APIs for scraping adds. The goal was to integrate this microservice into a personal project for a web platform providing a unified view of ads from partner sites, which ultimately did not make sense to continue. 
+This version ended up not being finalized as originally planned, as the existing APIs returns the plain HTML content of the requested pages, making it inefficient as it ends up to generate big response payloads. 
+
+The subsequent idea solve this problem big response payloads was to develop a new module, 
+used as a dependency of the web scraper, which would contain an HTML processor to extract the desired content and map it into a simpler JSON structure. 
+This JSON structure would then be returned as the response from these APIs.
+
 ## Features
 
-- **RESTful API**: Exposes a RESTful API with services for scrap single or multiple target websites.
+- **RESTful API**: Exposes a RESTful API with services for scrap single or multiple target websites. Consult OpenAPI documentation for more details. 
 - **Web Scraper Runner and Default Web Scraper Runner**: Provides an interface to implement a task executor responsible for scraping content from the requested target websites. The Default Web Scraper Runner uses the WorkStealingPool implementation as the thread pool.
 - **IP Rotation**: Switches between the Tor network and the host's own public IP address to rotate IP addresses.
-- **Exception Handling**: Provides robust exception handling for better error management.
-- **Logging**: Integrates log4j for effective debugging, monitoring, and log management.
-- **Configuration Management**: Supports external configuration files to easily manage application settings.
-- **Testing**: Includes comprehensive unit tests and integration tests using JUnit and Mockito for ensuring code quality.
 
 ## Technologies
 
@@ -88,3 +91,7 @@ services:
 ```
 
 Copy the above Docker Compose configuration into a `docker-compose.yml` file and run `docker-compose up -d` in the project directory to start the microservice container.
+
+## 🔗 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
